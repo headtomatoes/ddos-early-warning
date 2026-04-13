@@ -1,0 +1,213 @@
+
+<style>
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);border:0}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--font-sans);font-size:13px;color:var(--color-text-primary)}
+.wrap{padding:1rem 0}
+.delta-bar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;padding:10px 12px;background:var(--color-background-secondary);border-radius:var(--border-radius-md);border:0.5px solid var(--color-border-tertiary)}
+.delta-pill{font-size:11px;padding:3px 9px;border-radius:20px;font-weight:500;white-space:nowrap}
+.d-drop{background:#FCEBEB;color:#791F1F;border:0.5px solid #F09595}
+.d-change{background:#FAEEDA;color:#633806;border:0.5px solid #EF9F27}
+.d-new{background:#E1F5EE;color:#085041;border:0.5px solid #5DCAA5}
+.d-label{font-size:11px;color:var(--color-text-secondary);align-self:center;margin-right:4px;font-weight:500}
+.week-hdr{display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--color-background-secondary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);cursor:pointer;margin-bottom:5px;transition:background .15s}
+.week-hdr:hover{background:var(--color-background-primary)}
+.week-hdr.open{border-color:var(--color-border-primary);background:var(--color-background-primary)}
+.wnum{font-size:11px;font-weight:500;color:var(--color-text-secondary);font-family:var(--font-mono);min-width:24px}
+.wtitle{font-size:14px;font-weight:500;flex:1}
+.phase-pill{font-size:10px;padding:2px 7px;border-radius:20px;font-weight:500}
+.ph1{background:#FAEEDA;color:#633806}
+.ph2{background:#EEEDFE;color:#3C3489}
+.ph3{background:#E1F5EE;color:#085041}
+.ph4{background:#FCEBEB;color:#791F1F}
+.mvp-pill{font-size:10px;padding:2px 7px;border-radius:20px;background:#EEEDFE;color:#3C3489;font-weight:500;border:0.5px solid #AFA9EC}
+.pct-text{font-size:11px;color:var(--color-text-secondary);font-family:var(--font-mono);min-width:32px;text-align:right}
+.prog-wrap{width:60px;height:4px;background:var(--color-border-tertiary);border-radius:2px;overflow:hidden}
+.prog-fill{height:4px;background:#1D9E75;border-radius:2px;transition:width .3s}
+.panel{display:none;padding:12px 14px;border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);margin-bottom:10px;background:var(--color-background-primary)}
+.panel.open{display:block}
+.task-row{display:flex;gap:10px;align-items:flex-start;padding:6px 0;border-bottom:0.5px solid var(--color-border-tertiary)}
+.task-row:last-child{border-bottom:none}
+.chk{width:16px;height:16px;border-radius:3px;border:1.5px solid var(--color-border-secondary);flex-shrink:0;cursor:pointer;margin-top:1px;display:flex;align-items:center;justify-content:center}
+.chk.on{background:#1D9E75;border-color:#1D9E75}
+.chk.on::after{content:'';display:block;width:4px;height:7px;border-right:1.5px solid #fff;border-bottom:1.5px solid #fff;transform:rotate(45deg) translate(-1px,-1px)}
+.task-body{font-size:12.5px;line-height:1.55;flex:1}
+.tag{display:inline-block;font-size:10px;padding:1px 5px;border-radius:3px;margin-left:5px;vertical-align:middle;font-weight:500}
+.t-drop{background:#FCEBEB;color:#791F1F}
+.t-new{background:#E1F5EE;color:#085041}
+.t-change{background:#FAEEDA;color:#633806}
+.t-warn{background:#FDE8E8;color:#8b1a1a}
+.t-gate{background:#EEEDFE;color:#3C3489}
+.rationale{margin-top:6px;padding:6px 10px;background:var(--color-background-secondary);border-left:2px solid var(--color-border-secondary);border-radius:0 var(--border-radius-md) var(--border-radius-md) 0;font-size:11.5px;color:var(--color-text-secondary);line-height:1.5}
+.summary-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-bottom:14px}
+.s-card{background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:10px 12px}
+.s-val{font-size:20px;font-weight:500;font-family:var(--font-mono)}
+.s-lbl{font-size:10px;color:var(--color-text-secondary);margin-top:2px;text-transform:uppercase;letter-spacing:.5px}
+code{font-family:var(--font-mono);font-size:11px;background:var(--color-background-secondary);padding:1px 4px;border-radius:3px;border:0.5px solid var(--color-border-tertiary)}
+</style>
+
+<div class="wrap">
+<h2 class="sr-only">Revised execution plan weeks 3 to 12, updated from EDA findings</h2>
+
+<div class="delta-bar">
+  <span class="d-label">EDA-driven changes:</span>
+  <span class="delta-pill d-drop">SMOTE dropped (70M rows)</span>
+  <span class="delta-pill d-drop">Lightweight 10 replaced</span>
+  <span class="delta-pill d-drop">Accuracy as primary metric</span>
+  <span class="delta-pill d-change">log1p baked into pipeline</span>
+  <span class="delta-pill d-change">Evaluation → BENIGN-F1 + macro-F1</span>
+  <span class="delta-pill d-new">Protocol ablation added W5</span>
+  <span class="delta-pill d-new">Per-class median imputation</span>
+  <span class="delta-pill d-new">Ordinal encode Bwd Packets</span>
+</div>
+
+<div class="summary-grid">
+  <div class="s-card"><div class="s-val" id="sv-total">0</div><div class="s-lbl">Total tasks</div></div>
+  <div class="s-card"><div class="s-val" style="color:#1D9E75" id="sv-done">0</div><div class="s-lbl">Completed</div></div>
+  <div class="s-card"><div class="s-val" id="sv-pct">0%</div><div class="s-lbl">Overall progress</div></div>
+  <div class="s-card"><div class="s-val" style="color:#BA7517" id="sv-active">W3</div><div class="s-lbl">Current week</div></div>
+</div>
+
+<div id="week-list"></div>
+</div>
+
+<script>
+const weeks=[
+{wk:3,title:"Preprocessing pipeline",phase:"Phase 1",ph:"ph1",tasks:[
+  {t:"Drop all identifier and leakage columns: Flow ID, Source IP, Destination IP, Source Port, Timestamp, Unnamed:0",tag:"t-drop",why:"These carry no behavioral information and directly enable label leakage via port-signature detection."},
+  {t:"Drop all 9 exact duplicate features (r=1.0000): Subflow Fwd/Bwd Packets, Subflow Fwd/Bwd Bytes, Avg Fwd/Bwd Segment Size, Fwd Packets/s, RST Flag Count, Fwd Header Length.1",tag:"t-drop",why:"From redundant_pairs.txt — 9 pairs at r=1.0000 are mathematically identical. Retaining both wastes memory and inflates feature importance scores."},
+  {t:"Drop zero-variance spike features (all classes spike at zero, no inter-class spread): Bwd IAT Total, Fwd IAT Total, Fwd/Bwd Avg Bytes/Bulk, Fwd/Bwd Avg Packets/Bulk, Fwd/Bwd Avg Bulk Rate, SimillarHTTP, Inbound",tag:"t-drop",why:"Histogram plots confirm these features have no discriminative power. Fwd IAT Total also duplicates Flow Duration at r=0.9999."},
+  {t:"Impute Flow Bytes/s and Flow Packets/s using per-class median: group by Label, compute median, fillna per group",tag:"t-change",why:"3.08% nulls (2.17M rows) originate from division-by-zero in zero-duration flows. Per-class median prevents cross-class contamination that global median would introduce."},
+  {t:"Treat Total Backward Packets as ordinal integer — do NOT log-transform. Verify unique values = {0,1,2,3,4,5,6} with df['Total Backward Packets'].value_counts()",tag:"t-new",why:"Histogram shows this is a discrete 0–6 integer, not continuous. Log-transforming a discrete ordinal would distort the scale. It should pass directly to the model as-is."},
+  {t:"Apply log1p transform to all right-skewed continuous features: Flow Bytes/s, Flow Packets/s, Flow Duration, Flow IAT Mean/Std/Max/Min, Total Length Fwd/Bwd Packets, Total Fwd Packets, Packet Length Variance, Fwd/Bwd IAT Mean/Std/Max/Min",tag:"t-new",why:"All histogram plots confirm severe right skew with massive spike near zero and long tail. log1p is safe for zero values (log(0+1)=0) and compresses the tail to a learnable scale."},
+  {t:"Apply MinMaxScaler fitted ONLY on training split. Save scaler.pkl. Verify: apply transform to val and test sets using the already-fitted scaler — never refit",tag:"t-change",why:"Fitting on train only prevents data leakage. The scaler must be identical at inference time to produce the same feature scale the ONNX model was trained on."},
+  {t:"Stratified 70/15/15 split preserving label ratios. Confirm BENIGN count in each split: train ~79K, val ~17K, test ~17K",tag:"t-change",why:"With only 113,828 BENIGN flows, a non-stratified split risks near-zero BENIGN in validation. You need ~17K BENIGN in test to measure FPR reliably."},
+  {t:"Compute scale_pos_weight for XGBoost: n_attack / n_benign in train split. Expected ~45,000. Record this value in model_card.md",tag:"t-new",why:"This replaces SMOTE as the primary imbalance strategy. SMOTE on 70M rows is computationally infeasible and would synthesize non-physical flow vectors."},
+  {t:"Save final splits: train_processed.parquet, val_processed.parquet, test_holdout_processed.parquet. Use parquet not CSV for 10x faster I/O at this scale",tag:"t-new",why:"Parquet with snappy compression reduces 70M row CSVs from ~8GB to ~800MB and loads 5-10x faster via pandas read_parquet."},
+]},
+{wk:4,title:"Baseline model training",phase:"Phase 2",ph:"ph2",tasks:[
+  {t:"Define EDA-driven feature set (replaces original Lightweight 10): Flow Bytes/s, Total Length of Fwd Packets, Flow Packets/s, Flow IAT Mean, Flow Duration, Total Backward Packets. Record this as FEATURE_SET_V1 in model_card.md",tag:"t-change",why:"These are the top-5 eta² features from EDA plus Total Backward Packets (discrete discriminator). The original Lightweight 10 was theoretical; this is data-validated."},
+  {t:"Train Logistic Regression baseline on FEATURE_SET_V1 with class_weight='balanced'. Record macro-F1, BENIGN-class F1, and inference ms/1000 samples",tag:"t-change",why:"Macro-F1 (not accuracy) is the primary metric. Accuracy of 99.8%+ is achievable by predicting 'attack' for everything — meaningless here."},
+  {t:"Train Decision Tree (max_depth=4, class_weight='balanced'). Record same metrics + model size bytes",tag:"t-change",why:""},
+  {t:"Train Random Forest (n_estimators=50, max_depth=4, class_weight='balanced', n_jobs=-1)",tag:"t-change",why:""},
+  {t:"Train XGBoost with scale_pos_weight={computed_value}, max_depth=4, n_estimators=100, tree_method='hist' (required for 70M row datasets — default exact method will OOM)",tag:"t-new",why:"tree_method='hist' uses histogram approximation. Without it, XGBoost's exact greedy algorithm will attempt to sort 70M rows in memory and crash."},
+  {t:"Build comparison DataFrame: Model | macro-F1 | BENIGN-F1 | FPR | inference_ms_per_1k | size_KB",tag:"t-change",why:"FPR must be computed specifically against BENIGN flows: FP/(FP+TN) where TN = correctly identified BENIGN flows."},
+  {t:"Plot XGBoost feature importance bar chart and save as feature_importance_v1.png for thesis",tag:"t-change",why:""},
+  {t:"Sanity check: a model predicting 'attack' for 100% of rows should show 0.0 BENIGN-F1. Confirm your baseline beats this trivially",tag:"t-new",why:"This verifies your evaluation code is correct. If your 'predict all attack' dummy achieves BENIGN-F1=0 and your LR baseline does not, the pipeline is working."},
+]},
+{wk:5,title:"Ablation studies & optimization",phase:"Phase 2",ph:"ph2",tasks:[
+  {t:"ABLATION A — Protocol leakage test: train XGBoost WITH Protocol feature vs WITHOUT. Record BENIGN-F1 delta. If delta > 5 points, Protocol is a signature-detection crutch",tag:"t-new",why:"EDA finding: Protocol has r=-0.993 with ACK Flag Count. UDP attacks (Protocol=17) have zero ACK by definition, creating a near-deterministic rule. The model may be learning protocol identity rather than behavioral patterns."},
+  {t:"ABLATION B — Imbalance strategy comparison: class_weight vs SMOTE on a 500K stratified subsample (not full 70M). Compare BENIGN-F1 and FPR",tag:"t-change",why:"SMOTE at 70M rows is infeasible, but comparing it on a subsample validates that class_weight is a sound substitute and gives you honest ablation results for the thesis."},
+  {t:"ABLATION C — Feature set expansion: add SYN Flag Count and ACK Flag Count to FEATURE_SET_V1, retrain XGBoost, compare macro-F1. These were in the original Lightweight 10 but not top-5 by eta²",tag:"t-new",why:""},
+  {t:"GridSearchCV on best XGBoost: max_depth=[3,4,5], n_estimators=[100,200], learning_rate=[0.05,0.1]. Use macro-F1 as scoring metric, NOT accuracy",tag:"t-change",why:""},
+  {t:"Compute p99 inference latency over 50,000 samples (not just mean). Target: p99 < 1ms per sample in Python",tag:"t-change",why:""},
+  {t:"Enforce model size ≤ 800KB via max_depth and n_estimators constraints. Run: import os; os.path.getsize('model.onnx')",tag:"t-change",why:""},
+  {t:"Generate confusion matrix on val set. For thesis: show per-class precision/recall as a heatmap, not just binary confusion matrix. 19 classes × 2 metrics = clear story",tag:"t-new",why:"A 19-class problem cannot be summarized with a 2×2 confusion matrix. A per-class breakdown reveals which attack types are confused — critical for your thesis argument."},
+  {t:"Document final feature set selection rationale in model_card.md: why each feature was kept or dropped, citing EDA eta² scores and ablation deltas",tag:"t-new",why:""},
+]},
+{wk:6,title:"ONNX export & MVP-1 gate",phase:"Phase 2",ph:"ph2",mvp:true,tasks:[
+  {t:"Build sklearn Pipeline that chains: (1) log1p transformer via FunctionTransformer(np.log1p), (2) MinMaxScaler, (3) XGBoost classifier. Export the ENTIRE pipeline as one ONNX object",tag:"t-new",why:"Critical: the log1p transform must be inside the ONNX model, not applied separately in Go. Embedding it in the pipeline means Go only needs to pass raw feature values — the ONNX graph handles all preprocessing. This eliminates a whole class of inference bugs."},
+  {t:"Verify ONNX pipeline round-trip: run 1000 val samples through sklearn pipeline AND onnxruntime. Assert zero prediction mismatches",tag:"t-new",why:""},
+  {t:"MVP-1 GATE check — system must demonstrate all of: (1) load test_holdout_processed.parquet, (2) run ONNX inference, (3) print per-class F1 report, (4) BENIGN-F1 ≥ 0.90, (5) macro-F1 ≥ 0.95, (6) p99 inference latency < 1ms",tag:"t-gate",why:"BENIGN-F1 ≥ 0.90 is the thesis-critical gate. A model that misses 10%+ of legitimate traffic is operationally unusable regardless of attack detection accuracy."},
+  {t:"Commit model.onnx (must include log1p + scaler + classifier), scaler.pkl (backup), feature_names.json, model_card.md to git",tag:"t-change",why:""},
+  {t:"Write 1-page MVP-1 demo script: loads ONNX, streams val rows one-by-one, prints ALERT when score > 0.7 for non-BENIGN prediction",tag:"t-change",why:""},
+  {t:"Prepare 3-slide advisor deck: (1) EDA key findings with class distribution chart, (2) ablation results table, (3) final metrics vs MVP-1 gate criteria",tag:"t-change",why:""},
+]},
+{wk:7,title:"XDP hello world & counter map",phase:"Phase 3",ph:"ph3",tasks:[
+  {t:"Confirm FEATURE_SET_V1 columns are computable in eBPF: Flow Bytes/s (byte_count / duration_ns * 1e9), Total Length Fwd Packets (sum fwd pkt len), Flow Packets/s (pkt_count / duration_ns * 1e9), Flow IAT Mean (sum_iat / pkt_count), Flow Duration (last_seen - first_seen), Total Backward Packets (bwd_count int)",tag:"t-new",why:"Before writing a single line of XDP code, verify every feature in FEATURE_SET_V1 can be computed from packet headers available in the kernel — no userspace lookups allowed in the hot path."},
+  {t:"Write xdp_pass.c: minimal program with BPF_MAP_TYPE_LRU_HASH (max_entries=65536), key=__u32 src_ip. Compile with clang -O2 -target bpf",tag:"t-change",why:""},
+  {t:"Load and verify: sudo ip link set dev eth0 xdp obj xdp_pass.o sec xdp — confirm with bpftool prog show",tag:"t-change",why:""},
+  {t:"Design flow_stats struct to hold all FEATURE_SET_V1 accumulators: pkt_count, byte_count_fwd, byte_count_bwd, pkt_count_bwd, sum_iat_ns, first_seen_ns, last_seen_ns, last_pkt_ns. Verify struct size < 64 bytes to stay well within 512-byte stack limit",tag:"t-new",why:"The struct is smaller than the original 'Lightweight 10' design because our EDA-validated feature set is 6 features, not 10. Smaller struct = less stack pressure = safer verifier passage."},
+  {t:"Implement debug toggle map: BPF_MAP_TYPE_ARRAY key=0 value=__u8. When value=1, skip XDP_DROP and redirect to perf ring buffer instead",tag:"t-change",why:""},
+  {t:"Test LRU eviction under spoofed flood: hping3 -S --flood --rand-source -p 80 victim_ip for 10s. Confirm bpftool map show shows entries ≤ 65536 and no OOM in dmesg",tag:"t-change",why:""},
+]},
+{wk:8,title:"Header parsing & stateful maps",phase:"Phase 3",ph:"ph3",tasks:[
+  {t:"Parse Ethernet → IPv4 header with full data_end bounds check. Add IPv4 only guard — document IPv6 as out-of-scope in thesis limitations",tag:"t-change",why:""},
+  {t:"Parse TCP/UDP with bounds check. Extract: tcp->syn, tcp->ack for flag counts; skb->len for packet length; direction (fwd vs bwd) from dst_ip comparison",tag:"t-change",why:""},
+  {t:"Implement fwd/bwd direction logic: compare dst_ip to a configured VICTIM_IP constant in a BPF_MAP_TYPE_ARRAY. Packets to victim = forward, packets from victim = backward",tag:"t-new",why:"FEATURE_SET_V1 requires Total Length of Fwd Packets and Total Backward Packets, which both require knowing which direction a packet is travelling. This is the minimum viable direction logic."},
+  {t:"Implement IAT accumulation in eBPF: store last_pkt_ns per src_ip. On each packet: iat = current_time - last_pkt_ns; sum_iat += iat; last_pkt_ns = current_time",tag:"t-new",why:"Flow IAT Mean (eta²=0.1514, rank 4) requires per-flow IAT accumulation in the kernel. This is calculable without floating point — only integer nanosecond accumulation needed."},
+  {t:"Verify map contents after 60s of normal traffic: bpftool map dump name flow_stats | python3 -c 'import sys,json; [print(r) for r in json.load(sys.stdin)]'",tag:"t-change",why:""},
+  {t:"Add BPF_MAP_TYPE_RINGBUF for fast-path threshold alerts: if pkt_count > 50000 in < 1s, push event to ring buffer without waiting for Go poll cycle",tag:"t-change",why:""},
+]},
+{wk:9,title:"Go controller & feature computation",phase:"Phase 3",ph:"ph3",tasks:[
+  {t:"In Go: after reading eBPF map, compute the 6 FEATURE_SET_V1 values before passing to ONNX: flow_bytes_per_s = (byte_count_fwd + byte_count_bwd) / duration_s, total_len_fwd = byte_count_fwd, flow_pkts_per_s = pkt_count / duration_s, flow_iat_mean = sum_iat_ns / pkt_count, flow_duration = last_seen_ns - first_seen_ns, bwd_pkts = pkt_count_bwd",tag:"t-new",why:"These 6 raw values map exactly to FEATURE_SET_V1. The ONNX model then applies log1p internally (since the transform is embedded in the pipeline). Go only needs to pass raw integers/floats."},
+  {t:"Feature vector must be []float32{flow_bytes_per_s, total_len_fwd, flow_pkts_per_s, flow_iat_mean, flow_duration, float32(bwd_pkts)}. Column order must match feature_names.json exactly",tag:"t-new",why:"ONNX models are position-sensitive. A mismatch between Go column order and training column order produces silent incorrect predictions — no error, just wrong scores."},
+  {t:"Add zero-duration guard: if flow_duration == 0 { continue } to prevent division-by-zero before computing per-second rates",tag:"t-new",why:"Zero-duration flows are the source of the 3.08% nulls in Flow Bytes/s and Packets/s. The same issue would crash Go with a divide-by-zero if unguarded."},
+  {t:"Implement 200ms polling ticker. Log feature vectors to structured JSON: {src_ip, feature_vec, raw_counters, poll_timestamp_ns}",tag:"t-change",why:""},
+  {t:"Validate Go feature computation against Python: pick 5 known flows from val set, replicate their eBPF counters in a test map, run Go computation, assert values match Python within 0.1% tolerance",tag:"t-new",why:""},
+]},
+{wk:10,title:"ONNX integration & blacklist feedback",phase:"Phase 3",ph:"ph3",mvp:true,tasks:[
+  {t:"Load model.onnx (which includes log1p + scaler internally) via yalue/onnxruntime_go. Pass raw float32 vector — do NOT apply log1p again in Go",tag:"t-new",why:"The log1p transform is embedded in the ONNX pipeline. Applying it again in Go would double-transform the input and produce completely wrong scores. This is the most likely source of a silent inference bug."},
+  {t:"Run inference, check output tensor shape. ONNX classifier outputs: [0]=class_labels, [1]=probabilities dict. Extract BENIGN probability and compute attack_score = 1 - P(BENIGN)",tag:"t-new",why:"The attack score is derived from the inverse of BENIGN probability, not from any single attack class probability. This directly reflects the FPR-critical evaluation strategy from your EDA."},
+  {t:"Set alert threshold at attack_score > 0.7. Write src_ip to blacklist LRU map. Log: {timestamp, src_ip, attack_score, top_class, feature_vec}",tag:"t-change",why:""},
+  {t:"MVP-2 GATE: screen-record a 3-minute demo showing: (1) start ddos-watcher, (2) launch hping3 SYN flood from attacker VM, (3) ALERT printed within 2s, (4) bpftool map dump shows blacklisted IP, (5) tcpdump on victim shows packet rate drop after blacklist write",tag:"t-gate",why:""},
+  {t:"Fail-safe test: kill -9 the Go agent while XDP is loaded. Confirm XDP continues in PASS mode (no DROP). Confirm restart of agent re-loads blacklist from InfluxDB last-known state",tag:"t-change",why:""},
+  {t:"Write BENIGN flow replay test: replay 1000 known BENIGN flows via tcpreplay. Confirm zero are blacklisted. This is your live FPR measurement",tag:"t-new",why:"Your EDA showed BENIGN is only 0.162% of data. A live FPR test with replayed BENIGN traffic is the only honest way to validate the < 0.1% FPR claim in the thesis."},
+]},
+{wk:11,title:"Latency benchmarking & Grafana",phase:"Phase 4",ph:"ph4",tasks:[
+  {t:"Run 30 replay trials across 3 attack types: SYN flood (Syn class), amplification (DrDoS_SNMP), and mixed UDP (UDP class). Each trial at 100Mbps and 500Mbps",tag:"t-new",why:"Testing 3 distinct attack types validates that FEATURE_SET_V1 generalizes across the top attack classes, not just SYN floods. DrDoS_SNMP is the highest-volume class (28.5%) and the most important to catch."},
+  {t:"Compute detection latency per trial: T_detection = alert_timestamp - flow.first_seen_ns (from eBPF map). Record p50, p95, p99 across all 30 trials",tag:"t-change",why:""},
+  {t:"Build Grafana dashboard with 5 panels: (1) Attack Score time series, (2) BENIGN flow rate (should stay non-zero = good), (3) Packet rate by direction, (4) Active blacklist size, (5) Detection latency histogram",tag:"t-new",why:"Panel 2 (BENIGN flow rate) is new — it directly visualizes your FPR in real-time. If BENIGN flows start being blacklisted, this panel shows it immediately."},
+  {t:"Generate per-class detection metrics table: which attack types does the system detect reliably vs miss? This requires replaying each of the 19 attack classes separately",tag:"t-new",why:"Your 19-class dataset demands 19-class validation. A thesis claiming 'DDoS detection' that only validated on 2-3 classes will be challenged immediately."},
+  {t:"Measure XDP CPU overhead: run mpstat -P ALL 1 during 1Gbps replay. Record per-core CPU%. Target: < 15% CPU for XDP + Go combined",tag:"t-change",why:""},
+]},
+{wk:12,title:"Final evaluation & thesis writing",phase:"Phase 4",ph:"ph4",tasks:[
+  {t:"Run final holdout evaluation: never-before-seen test_holdout_processed.parquet through the live pipeline (not Python offline). Record BENIGN-F1, macro-F1, FPR, p99 latency",tag:"t-new",why:"The final metrics must come from the live system, not from offline sklearn evaluation. This is what separates a systems thesis from a pure ML paper."},
+  {t:"Write Limitations section covering: (1) dataset lab-origin timing artifacts, (2) IPv6 not supported, (3) no adversarial/evasion testing, (4) Protocol/ACK anticorrelation risk documented from EDA ablation results",tag:"t-new",why:"The Protocol ablation result from Week 5 must appear in Limitations. If Protocol exclusion caused a significant F1 drop, you must acknowledge the model's partial dependence on protocol-level rules."},
+  {t:"Generate 4 mandatory thesis figures: (1) system architecture diagram, (2) 19-class precision/recall heatmap, (3) detection latency CDF (p50/p95/p99 annotated), (4) feature importance bar chart with eta² overlay",tag:"t-new",why:""},
+  {t:"Package portfolio demo: 3-minute screen recording with narration covering — problem statement (10s), architecture walkthrough (40s), live attack detection (90s), metrics dashboard (20s)",tag:"t-change",why:""},
+  {t:"Push to GitHub: README with architecture diagram, quick-start instructions (2 VMs, exact commands), model card, and link to demo recording",tag:"t-change",why:""},
+  {t:"Archive all artifacts: model.onnx, feature_names.json, scaler.pkl, model_card.md, raw latency logs, Grafana dashboard JSON, all ablation results CSVs",tag:"t-change",why:""},
+]},
+];
+
+const saved=JSON.parse(localStorage.getItem('thesis-w3-12')||'{}');
+let open=null;
+
+function save(){localStorage.setItem('thesis-w3-12',JSON.stringify(saved));}
+
+function totals(){
+  let tot=0,done=0;
+  weeks.forEach(w=>w.tasks.forEach((_,i)=>{tot++;if(saved[`${w.wk}-${i}`])done++;}));
+  document.getElementById('sv-total').textContent=tot;
+  document.getElementById('sv-done').textContent=done;
+  document.getElementById('sv-pct').textContent=Math.round(done/tot*100)+'%';
+  const nxt=weeks.find(w=>w.tasks.some((_,i)=>!saved[`${w.wk}-${i}`]));
+  document.getElementById('sv-active').textContent=nxt?'W'+nxt.wk:'Done';
+}
+
+function render(){
+  const el=document.getElementById('week-list');
+  el.innerHTML='';
+  weeks.forEach(w=>{
+    const done=w.tasks.filter((_,i)=>saved[`${w.wk}-${i}`]).length;
+    const pct=Math.round(done/w.tasks.length*100);
+    const hdr=document.createElement('div');
+    hdr.className='week-hdr'+(open===w.wk?' open':'');
+    hdr.innerHTML=`<span class="wnum">W${w.wk}</span><span class="wtitle">${w.title}</span><span class="phase-pill ${w.ph}">${w.phase}</span>${w.mvp?'<span class="mvp-pill">MVP gate</span>':''}<span class="pct-text">${done}/${w.tasks.length}</span><div class="prog-wrap"><div class="prog-fill" style="width:${pct}%"></div></div>`;
+    hdr.onclick=()=>{open=open===w.wk?null:w.wk;render();};
+    el.appendChild(hdr);
+
+    if(open===w.wk){
+      const panel=document.createElement('div');
+      panel.className='panel open';
+      w.tasks.forEach((task,i)=>{
+        const key=`${w.wk}-${i}`;
+        const row=document.createElement('div');
+        row.className='task-row';
+        const isGate=task.tag==='t-gate';
+        const tagLabel={
+          't-drop':'dropped','t-new':'new from EDA','t-change':'revised','t-gate':'MVP gate','t-warn':'risk'
+        }[task.tag]||'';
+        row.innerHTML=`<div class="chk${saved[key]?' on':''}" data-k="${key}"></div><div class="task-body">${task.t}<span class="tag ${task.tag}">${tagLabel}</span>${task.why?`<div class="rationale">${task.why}</div>`:''}</div>`;
+        row.querySelector('.chk').onclick=e=>{e.stopPropagation();saved[key]=!saved[key];save();render();totals();};
+        panel.appendChild(row);
+      });
+      el.appendChild(panel);
+    }
+  });
+  totals();
+}
+
+render();
+</script>

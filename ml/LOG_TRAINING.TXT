@@ -1,0 +1,82 @@
+══════════════════════════════════════════════════════════
+STAGE: W3_PREPROCESS
+══════════════════════════════════════════════════════════
+timestamp_start   : 2026-04-12T17:59:02Z
+timestamp_end     : 2026-04-12T18:02:48Z
+python_version    : 3.13.7
+host_machine      : DESKTOP-J9V6T4O
+source_files      : 18 CSV files
+total_rows_raw    : 70427637
+features_selected : [Flow Bytes/s, Total Length of Fwd Packets, Flow Packets/s, Flow IAT Mean, Flow Duration, Total Backward Packets, SYN Flag Count, ACK Flag Count, Label]
+rows_after_drop   : 70427637
+null_imputed_cols : Flow Bytes/s=2170750, Flow Packets/s=2170750
+impute_strategy   : per_class_median (fitted on train only)
+train_rows        : 49299345  BENIGN: 79680
+val_rows          : 10564146  BENIGN: 17074
+test_rows         : 10564146  BENIGN: 17074
+scale_pos_weight  : 617.72
+transforms_applied: None (Deferred to Pipeline in W4/W5)
+artifacts_saved   :
+  label_encoder.pkl      sha256: 455af8da1f829d49ea40d3a8c1b4ad03286678ba85a9ebe9821cf7dc907b3c0f
+  class_medians.pkl      sha256: c80ce60349a172a39c3c22a7895abd69f1c6140ff50ab216a48c692dc06677d4
+  train_processed.parquet sha256: b0b2d19a6c2aa4b8d6a62d4c3a49aa27bb685ff38a1e0e756bcf191f24d3042b
+  val_processed.parquet  sha256: e8ed4bd3b6d10f862b62118215e771aedc2694c77766e985531383bff9397daa
+  test_holdout_processed.parquet sha256: 421bc4ef08c1d2db0ca703b9a155094267cad24fda4a020d85386ae786d500d7
+STATUS: SUCCESS
+
+
+══════════════════════════════════════════════════════════
+STAGE: W4_TRAIN (baseline)
+══════════════════════════════════════════════════════════
+timestamp         : 2026-04-12T19:10:24Z
+config_applied    : max_depth=4, n_estimators=100, weight_clip=None
+macro_f1          : 0.4756
+benign_f1         : 0.8895
+fpr               : 0.914% (156 false alarms)
+STATUS: SUCCESS — new best checkpoint
+══════════════════════════════════════════════════════════
+STAGE: W5_OPTIMIZE (optimize)
+══════════════════════════════════════════════════════════
+timestamp         : 2026-04-12T20:59:49Z
+config_applied    : max_depth=6, n_estimators=150, weight_clip=None
+macro_f1          : 0.0540
+benign_f1         : 0.0000
+fpr               : 100.000% (17074 false alarms)
+STATUS: FAILED — BENIGN-F1 regressed. Reverted to previous checkpoint.
+══════════════════════════════════════════════════════════
+STAGE: W5_TUNE (tune)
+══════════════════════════════════════════════════════════
+timestamp         : 2026-04-12T22:11:30Z
+config_applied    : max_depth=5, n_estimators=100, weight_clip=100.0
+macro_f1          : 0.4809
+benign_f1         : 0.9204
+fpr               : 0.914% (156 false alarms)
+STATUS: SUCCESS — new best checkpoint
+══════════════════════════════════════════════════════════
+STAGE: PIPELINE_EXPORT
+══════════════════════════════════════════════════════════
+timestamp         : 2026-04-12T23:24:07Z
+best_config       : tune
+model_size_kb     : 3705.4
+artifacts_saved   : pipeline_checkpoint.pkl
+STATUS: SUCCESS — PIPELINE READY FOR EXPORT
+
+══════════════════════════════════════════════════════════
+STAGE: W5_THRESHOLD
+══════════════════════════════════════════════════════════
+timestamp         : 2026-04-12T23:24:12Z
+model_loaded      : pipeline_checkpoint.pkl
+threshold_sweep   :
+  0.001: FPR=19.345%  missed=179104
+  0.005: FPR=19.351%  missed=101190
+  0.010: FPR=19.351%  missed=87858
+  0.020: FPR=19.386%  missed=81755
+  0.050: FPR=19.533%  missed=79184
+  0.100: FPR=19.708%  missed=73943
+  0.200: FPR=20.183%  missed=67660
+  0.300: FPR=20.405%  missed=24746
+  0.400: FPR=21.284%  missed=24418
+  0.500: FPR=21.348%  missed=24211
+recommended_thresh: 0.001
+artifacts_saved   : deploy_config.json, threshold_analysis.json
+STATUS: FAILED — FPR target not met. Escalate to retraining with expanded feature set.

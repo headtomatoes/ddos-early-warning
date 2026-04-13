@@ -1,0 +1,8 @@
+{
+  "model_path": "xgboost_final.onnx",
+  "threshold": 0.001,
+  "achieved_fpr_pct": 19.345203232985828,
+  "achieved_missed_attacks": 179104,
+  "target_met": false,
+  "generated_at": "2026-04-12T23:24:12Z"
+}

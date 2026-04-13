@@ -1,0 +1,282 @@
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--font-sans);font-size:13px;color:var(--color-text-primary)}
+.wrap{padding:1rem 0}
+.tab-bar{display:flex;gap:4px;border-bottom:0.5px solid var(--color-border-tertiary);padding-bottom:0;margin-bottom:16px;flex-wrap:wrap}
+.tab{padding:8px 14px;cursor:pointer;font-size:12px;font-weight:500;color:var(--color-text-secondary);border-bottom:2px solid transparent;margin-bottom:-0.5px}
+.tab.active{color:var(--color-text-primary);border-bottom-color:var(--color-text-primary)}
+.tab:hover{color:var(--color-text-primary)}
+.panel{display:none}.panel.active{display:block}
+.pass{color:#085041;background:#E1F5EE;border:0.5px solid #5DCAA5;font-size:10px;padding:2px 7px;border-radius:3px;font-weight:500;white-space:nowrap}
+.fail{color:#791F1F;background:#FCEBEB;border:0.5px solid #F09595;font-size:10px;padding:2px 7px;border-radius:3px;font-weight:500;white-space:nowrap}
+.warn{color:#633806;background:#FAEEDA;border:0.5px solid #EF9F27;font-size:10px;padding:2px 7px;border-radius:3px;font-weight:500;white-space:nowrap}
+.info{color:#0C447C;background:#E6F1FB;border:0.5px solid #85B7EB;font-size:10px;padding:2px 7px;border-radius:3px;font-weight:500;white-space:nowrap}
+.check-row{display:flex;gap:10px;align-items:flex-start;padding:8px 0;border-bottom:0.5px solid var(--color-border-tertiary)}
+.check-row:last-child{border-bottom:none}
+.check-label{flex:1;font-size:12.5px;line-height:1.5}
+.finding{margin-top:6px;padding:7px 10px;border-left:2px solid var(--color-border-secondary);border-radius:0 var(--border-radius-md) var(--border-radius-md) 0;background:var(--color-background-secondary);font-size:11.5px;line-height:1.55;color:var(--color-text-secondary)}
+.finding.bad{border-left-color:#E24B4A;background:#FCEBEB}
+.finding code{background:var(--color-background-primary);padding:1px 4px;border-radius:3px;border:0.5px solid var(--color-border-tertiary);font-family:var(--font-mono);font-size:10.5px;color:var(--color-text-primary)}
+code{font-family:var(--font-mono);font-size:11px;background:var(--color-background-secondary);padding:1px 4px;border-radius:3px;border:0.5px solid var(--color-border-tertiary)}
+pre{font-family:var(--font-mono);font-size:11px;background:var(--color-background-secondary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);padding:10px 12px;overflow-x:auto;line-height:1.7;margin-top:8px;color:var(--color-text-primary)}
+.section-head{font-size:11px;font-weight:500;color:var(--color-text-secondary);text-transform:uppercase;letter-spacing:.7px;margin:16px 0 8px;border-bottom:0.5px solid var(--color-border-tertiary);padding-bottom:5px}
+.score-bar{display:flex;gap:12px;margin-bottom:16px}
+.score-card{flex:1;background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:10px 12px;text-align:center}
+.score-val{font-size:26px;font-weight:500;font-family:var(--font-mono)}
+.score-lbl{font-size:10px;color:var(--color-text-secondary);margin-top:2px}
+.verdict-block{border-left:3px solid;padding:10px 14px;border-radius:0 var(--border-radius-md) var(--border-radius-md) 0;margin-bottom:10px}
+.v-block{border-color:#E24B4A;background:#FCEBEB}
+.v-green{border-color:#1D9E75;background:#E1F5EE}
+.v-warn{border-color:#BA7517;background:#FAEEDA}
+.v-head{font-weight:500;font-size:13px;margin-bottom:5px}
+.v-body{font-size:12px;line-height:1.6;color:var(--color-text-secondary)}
+.fix-box{background:var(--color-background-secondary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);padding:10px 12px;margin-top:8px}
+.fix-title{font-size:11px;font-weight:500;color:#085041;margin-bottom:4px}
+</style>
+
+<div class="wrap">
+<h2 style="font-size:0;position:absolute">Code review report for DDoS pipeline phases 1 through 3</h2>
+
+<div class="tab-bar">
+  <div class="tab active" onclick="switchTab('w3')">Phase 1 — w3_preprocess</div>
+  <div class="tab" onclick="switchTab('w5t')">Phase 2 — w5_train_final</div>
+  <div class="tab" onclick="switchTab('w5th')">Phase 3 — w5_threshold</div>
+  <div class="tab" onclick="switchTab('verdict')">Final verdict</div>
+</div>
+
+<div id="w3" class="panel active">
+  <div class="score-bar">
+    <div class="score-card"><div class="score-val" style="color:#1D9E75">4/4</div><div class="score-lbl">Critical fixes</div></div>
+    <div class="score-card"><div class="score-val" style="color:#BA7517">2</div><div class="score-lbl">Remaining bugs</div></div>
+    <div class="score-card"><div class="score-val" style="color:#E24B4A">1</div><div class="score-lbl">Blocker for W6</div></div>
+  </div>
+
+  <div class="section-head">Fix verification — critical items from critique report</div>
+
+  <div class="check-row">
+    <span class="pass">PASS</span>
+    <div class="check-label"><strong>Vectorized imputation — apply() removed</strong><br>
+    The slow <code>apply(lambda row:…)</code> is completely gone. Replaced with the recommended vectorized pattern: <code>X_train[col].fillna(X_train['Label'].map(class_medians))</code>. All three splits imputed correctly using train-only medians. New artifact <code>class_medians.pkl</code> correctly persisted for downstream inference.</div>
+  </div>
+
+  <div class="check-row">
+    <span class="pass">PASS</span>
+    <div class="check-label"><strong>LabelEncoder fitted exactly once and saved</strong><br>
+    <code>le.fit_transform(df['Label'])</code> runs at L117, followed immediately by <code>joblib.dump(le, 'label_encoder.pkl')</code>. Both w5 scripts load this artifact and never call <code>.fit()</code> again. The label mapping is now stable across the entire pipeline.</div>
+  </div>
+
+  <div class="check-row">
+    <span class="pass">PASS</span>
+    <div class="check-label"><strong>log1p and MinMaxScaler deferred — parquet saved raw</strong><br>
+    The comment at L159 confirms intent: <em>"Dropped the slow log1p and MinMax processing → Defer to Phase 2 (ONNX Embedding!)"</em>. No <code>log1p</code> call exists in the script body. <code>MinMaxScaler</code> is not imported at all. Parquet is saved raw.</div>
+  </div>
+
+  <div class="check-row">
+    <span class="pass">PASS</span>
+    <div class="check-label"><strong>SYN Flag Count and ACK Flag Count added to FEATURES</strong><br>
+    Both columns are in the <code>FEATURES</code> list at lines 71–72, and the same peek+load logic selects them from CSVs. Parquet files will contain 8 feature columns + Label, matching FEATURES_V2 in both w5 scripts exactly.</div>
+  </div>
+
+  <div class="check-row">
+    <span class="warn">BUG — minor</span>
+    <div class="check-label"><strong>Rare class merge: 'UDPLag' entry is dead code</strong>
+    <div class="finding bad">
+      L93 applies <code>.str.upper()</code> before L95 runs <code>.replace()</code>. After uppercasing, the class 'UDPLag' becomes 'UDPLAG'. The replace list <code>['WEBDDOS', 'UDPLAG', 'UDPLag']</code> will correctly catch 'WEBDDOS' and 'UDPLAG', but the third entry <code>'UDPLag'</code> will never match — it is dead code. Not a runtime error, but it signals the ordering was not thought through.
+      <div class="fix-box"><div class="fix-title">Fix (1 line)</div>
+      <code>temp_df['Label'].replace(['WEBDDOS', 'UDPLAG'], 'RARE_ATTACK')</code>
+      </div>
+    </div>
+    </div>
+  </div>
+
+  <div class="check-row">
+    <span class="fail">BUG — significant</span>
+    <div class="check-label"><strong>UDP-lag (366,461 rows) is NOT merged — remains as 'UDP-LAG'</strong>
+    <div class="finding bad">
+      The original dataset contains both 'UDPLag' (1,873 rows) and 'UDP-lag' (366,461 rows). After <code>.str.upper()</code>, 'UDP-lag' becomes 'UDP-LAG'. The replace list contains 'UDPLAG' but not 'UDP-LAG'. These are distinct strings. 'UDP-LAG' will remain as its own class — a minority class with 366K rows that was the source of <code>precision=0.18</code> in the previous run (low, but not catastrophic). It won't be merged into RARE_ATTACK as intended.
+      <div class="fix-box"><div class="fix-title">Fix</div>
+      <code>temp_df['Label'].replace(['WEBDDOS', 'UDPLAG', 'UDP-LAG'], 'RARE_ATTACK')</code>
+      </div>
+    </div>
+    </div>
+  </div>
+</div>
+
+<div id="w5t" class="panel">
+  <div class="score-bar">
+    <div class="score-card"><div class="score-val" style="color:#1D9E75">4/5</div><div class="score-lbl">Requirements met</div></div>
+    <div class="score-card"><div class="score-val" style="color:#E24B4A">1</div><div class="score-lbl">Blocker (ONNX)</div></div>
+    <div class="score-card"><div class="score-val" style="color:#BA7517">1</div><div class="score-lbl">Memory concern</div></div>
+  </div>
+
+  <div class="section-head">Fix verification</div>
+
+  <div class="check-row">
+    <span class="pass">PASS</span>
+    <div class="check-label"><strong>LabelEncoder loaded, never re-fit</strong><br>
+    Script opens with <code>le = joblib.load('label_encoder.pkl')</code> and immediately raises <code>FileNotFoundError</code> if missing. A grep confirms zero calls to <code>le.fit()</code> or <code>le.fit_transform()</code> anywhere in the file. This is correct.</div>
+  </div>
+
+  <div class="check-row">
+    <span class="pass">PASS</span>
+    <div class="check-label"><strong>FEATURES_V2 matches parquet columns — no KeyError crash</strong><br>
+    w3 was updated to include 'SYN Flag Count' and 'ACK Flag Count' in its <code>FEATURES</code> list and loads them from CSV. The parquet files therefore contain all 8 columns. FEATURES_V2 in w5_train_final references the same 8 names. No crash.</div>
+  </div>
+
+  <div class="check-row">
+    <span class="pass">PASS</span>
+    <div class="check-label"><strong>Sequential experiment loop with automatic rollback</strong><br>
+    The <code>EXPERIMENTS</code> list drives a for-loop that trains, evaluates, compares <code>benign_f1 > best_benign_f1</code>, saves on improvement, and logs "ROLLBACK" on regression. If weight-clipping degrades BENIGN-F1 again (as it did previously), the checkpoint remains at the last best model. This is exactly the protection the critique required.</div>
+  </div>
+
+  <div class="check-row">
+    <span class="pass">PASS</span>
+    <div class="check-label"><strong>Type safety: y_train is integers, not strings</strong><br>
+    Because w3 now calls <code>le.fit_transform(df['Label'])</code> before saving to parquet, the 'Label' column is stored as integers. <code>y_train = df_train['Label']</code> is an integer Series. <code>compute_sample_weight('balanced', y_train)</code>, <code>model.fit(X_train, y_train)</code>, and <code>f1_score(y_val, y_pred, average=None)</code> all operate correctly on integers. <code>benign_idx</code> from <code>le.classes_.index('BENIGN')</code> is also an integer (0, since BENIGN sorts first alphabetically), so <code>f1_scores[benign_idx]</code> correctly indexes the BENIGN per-class F1.</div>
+  </div>
+
+  <div class="check-row">
+    <span class="fail">BLOCKER</span>
+    <div class="check-label"><strong>No sklearn Pipeline built — transforms not embedded for ONNX</strong>
+    <div class="finding bad">
+      The critique's core architectural recommendation was: <em>"Rebuild the pipeline so that log1p and the scaler are embedded inside the ONNX graph using sklearn.pipeline.Pipeline → skl2onnx.convert_sklearn."</em> This was not implemented. The script trains a bare <code>XGBClassifier</code> on raw unscaled data and saves it with <code>.save_model()</code> (XGBoost JSON format). When Week 6 exports this to ONNX, the resulting model will have no transform layer. The Go controller must then manually apply <code>log1p</code> before calling the model — which is exactly the silent inference bug the critique flagged. Training on raw data is fine for tree models, but the ONNX export path requires a Pipeline wrapper.
+      <div class="fix-box">
+        <div class="fix-title">Required implementation for Week 6 ONNX export</div>
+<pre>from sklearn.pipeline import Pipeline
+from sklearn.preprocessing import FunctionTransformer, MinMaxScaler
+
+pipeline = Pipeline([
+    ("log1p",  FunctionTransformer(np.log1p, validate=True)),
+    ("scaler", MinMaxScaler()),
+    ("model",  xgb.XGBClassifier(**best_cfg))
+])
+pipeline.fit(X_train, y_train, model__sample_weight=current_weights)
+# Export entire pipeline — Go receives raw values, ONNX handles transforms internally
+from skl2onnx import convert_sklearn
+from skl2onnx.common.data_types import FloatTensorType
+model_onnx = convert_sklearn(pipeline, initial_types=[('float_input', FloatTensorType([None, 8]))])
+with open("xgboost_final.onnx","wb") as f: f.write(model_onnx.SerializeToString())</pre>
+      </div>
+    </div>
+    </div>
+  </div>
+
+  <div class="check-row">
+    <span class="warn">MEMORY</span>
+    <div class="check-label"><strong>weights_train.copy() not explicitly released between iterations</strong>
+    <div class="finding">
+      <code>weights_train</code> (49M rows × 8 bytes ≈ 392MB) is computed outside the loop. Inside the loop, <code>current_weights = weights_train.copy()</code> allocates another 392MB per iteration. <code>del model</code> + <code>gc.collect()</code> frees the model but not the weight copy. Peak usage is ~784MB across two weight arrays simultaneously. For a 32GB machine this is acceptable, but add <code>del current_weights</code> after each <code>model.fit()</code> call to be precise.
+    </div>
+    </div>
+  </div>
+</div>
+
+<div id="w5th" class="panel">
+  <div class="score-bar">
+    <div class="score-card"><div class="score-val" style="color:#1D9E75">7/7</div><div class="score-lbl">Requirements met</div></div>
+    <div class="score-card"><div class="score-val" style="color:#1D9E75">0</div><div class="score-lbl">Bugs found</div></div>
+    <div class="score-card"><div class="score-val" style="color:#1D9E75">CLEAN</div><div class="score-lbl">Status</div></div>
+  </div>
+
+  <div class="section-head">Fix verification — all items from critique report</div>
+
+  <div class="check-row">
+    <span class="pass">PASS</span>
+    <div class="check-label"><strong>FPR ≤ 0.10% enforced with automatic threshold selection</strong><br>
+    <code>TARGET_MAX_FPR_PCT = 0.10</code> is the single source of truth. The selection logic correctly filters <code>valid_thresholds</code> to only those meeting FPR ≤ 0.10%, then sorts by <code>missed attacks ascending</code> to pick the threshold that catches the most attacks while staying inside the FPR budget. This is the correct optimization direction.</div>
+  </div>
+
+  <div class="check-row">
+    <span class="pass">PASS</span>
+    <div class="check-label"><strong>SystemExit triggers correctly when target is not met</strong><br>
+    The fallback path selects the minimum-FPR threshold, writes both artifacts anyway, then executes <code>raise SystemExit(…)</code>. This halts the pipeline before Week 6 ONNX export runs on an underperforming model. The exit message clearly instructs the operator to retrain.</div>
+  </div>
+
+  <div class="check-row">
+    <span class="pass">PASS</span>
+    <div class="check-label"><strong>Type safety: integer comparison is correct</strong><br>
+    Because w3 applies <code>le.fit_transform</code> before saving parquet, <code>df_val['Label'].values</code> is an integer array. <code>benign_idx = list(le.classes_).index('BENIGN')</code> returns an integer. The comparison <code>(y_val == benign_idx)</code> is therefore integer == integer — no silent type mismatch. This was identified as a potential bug in the previous review but is resolved by w3's new encoding order.</div>
+  </div>
+
+  <div class="check-row">
+    <span class="pass">PASS</span>
+    <div class="check-label"><strong>deploy_config.json schema is correct for Go controller</strong><br>
+    The config contains all fields the Go controller needs: <code>model_path</code>, <code>threshold</code> (float), <code>achieved_fpr_pct</code>, <code>achieved_missed_attacks</code>, <code>target_met</code> (bool), <code>generated_at</code> (ISO 8601). The Go controller can load this at startup and use <code>threshold</code> directly against the ONNX model's P(BENIGN) output.</div>
+  </div>
+
+  <div class="check-row">
+    <span class="pass">PASS</span>
+    <div class="check-label"><strong>threshold_analysis.json persists the full sweep for audit</strong><br>
+    The complete sweep results are serialized to <code>threshold_analysis.json</code> before any blocking logic runs. Even if <code>SystemExit</code> is raised, the artifact exists for post-mortem analysis. Correct ordering.</div>
+  </div>
+
+  <div class="check-row">
+    <span class="pass">PASS</span>
+    <div class="check-label"><strong>LabelEncoder loaded, never re-fit</strong><br>
+    Same as w5_train_final — loads <code>label_encoder.pkl</code>, raises if missing, never calls <code>.fit()</code>.</div>
+  </div>
+
+  <div class="check-row">
+    <span class="pass">PASS</span>
+    <div class="check-label"><strong>Logging appended correctly with stage header</strong><br>
+    <code>append_to_log</code> opens in append mode (<code>'a'</code>), writes the W5_THRESHOLD stage block with sweep results, recommended threshold, and final STATUS line. Consistent with the log template.</div>
+  </div>
+</div>
+
+<div id="verdict" class="panel">
+  <div class="section-head">Phase-by-phase scorecard</div>
+  <div class="score-bar">
+    <div class="score-card"><div class="score-val" style="color:#BA7517">w3</div><div class="score-lbl">4/4 critical fixed<br>2 bugs remain</div></div>
+    <div class="score-card"><div class="score-val" style="color:#E24B4A">w5_train</div><div class="score-lbl">4/5 fixed<br>ONNX pipeline missing</div></div>
+    <div class="score-card"><div class="score-val" style="color:#1D9E75">w5_thresh</div><div class="score-lbl">7/7 clean<br>Ready to ship</div></div>
+  </div>
+
+  <div class="verdict-block v-block">
+    <div class="v-head">Blocker — not cleared for Dr. Le Hai Duong review yet</div>
+    <div class="v-body">The pipeline cannot receive a green light in its current state. The missing sklearn <code>Pipeline</code> wrapper in w5_train_final.py means that the Week 6 ONNX export will produce a model with no transform layer. The Go eBPF controller will then receive raw packet counter values and pass them directly to a model trained on raw values — which is consistent, so inference will not immediately crash. However, it violates the core architectural requirement that transforms are embedded in the ONNX graph, making the system fragile to any future preprocessing change and impossible to validate end-to-end in Python before deployment.</div>
+  </div>
+
+  <div class="verdict-block v-warn">
+    <div class="v-head">Warning — UDP-LAG still in dataset as a separate class</div>
+    <div class="v-body">'UDP-lag' (366,461 rows) becomes 'UDP-LAG' after <code>.str.upper()</code> and is not caught by the replace list. It will remain as a standalone class in the parquet files and in the trained model. This is not catastrophic — UDP-lag has enough samples for the model to learn boundaries — but it contradicts the merge plan and will confuse the thesis narrative about rare class elimination.</div>
+  </div>
+
+  <div class="verdict-block v-green">
+    <div class="v-head">What is clean and ready</div>
+    <div class="v-body">w5_threshold.py is production-quality code. The entire Phase 3 threshold gating logic is correctly implemented, type-safe, and machine-readable. w3's critical fixes (vectorized imputation, single LE, deferred transforms, BENIGN/UDPLAG merge, SYN/ACK features) are all correct. w5_train_final's experiment loop and rollback logic are structurally sound.</div>
+  </div>
+
+  <div class="section-head">Exact 3-step to-do before advisor review</div>
+
+  <div class="check-row" style="padding:10px 0">
+    <span class="fail" style="min-width:24px;text-align:center">1</span>
+    <div class="check-label"><strong>Fix the rare class merge in w3_preprocess.py</strong>
+<pre>temp_df['Label'] = temp_df['Label'].replace(
+    ['WEBDDOS', 'UDPLAG', 'UDP-LAG'], 'RARE_ATTACK'
+)</pre>
+    Remove 'UDPLag' (dead code). Add 'UDP-LAG'. Re-run w3 to regenerate parquet.</div>
+  </div>
+
+  <div class="check-row" style="padding:10px 0">
+    <span class="fail" style="min-width:24px;text-align:center">2</span>
+    <div class="check-label"><strong>Add sklearn Pipeline to w5_train_final.py around the best model</strong><br>
+    After the experiment loop identifies the best config, rebuild that model inside a <code>Pipeline([log1p, MinMaxScaler, XGBClassifier])</code>. Save the pipeline checkpoint. This is the artifact that w6_onnx_export.py will convert. Add <code>del current_weights; gc.collect()</code> at loop bottom.</div>
+  </div>
+
+  <div class="check-row" style="padding:10px 0">
+    <span class="info" style="min-width:24px;text-align:center">3</span>
+    <div class="check-label"><strong>Write w6_onnx_export.py before the advisor meeting</strong><br>
+    Load <code>pipeline_checkpoint.pkl</code> → <code>convert_sklearn()</code> → write <code>xgboost_final.onnx</code> → verify round-trip predictions match sklearn on 500 val samples → update <code>deploy_config.json["model_path"]</code> → log W6_ONNX_EXPORT stage to LOG_TRAINING.TXT. This completes the MVP-1 gate.</div>
+  </div>
+</div>
+</div>
+
+<script>
+function switchTab(id){
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  event.target.classList.add('active');
+}
+</script>

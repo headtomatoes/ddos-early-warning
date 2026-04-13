@@ -1,0 +1,364 @@
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--font-sans);font-size:13px;color:var(--color-text-primary)}
+.wrap{padding:1rem 0}
+.tab-bar{display:flex;gap:4px;margin-bottom:16px;border-bottom:0.5px solid var(--color-border-tertiary);padding-bottom:0}
+.tab{padding:8px 14px;cursor:pointer;font-size:12px;font-weight:500;color:var(--color-text-secondary);border-bottom:2px solid transparent;margin-bottom:-0.5px}
+.tab.active{color:var(--color-text-primary);border-bottom-color:var(--color-text-primary)}
+.tab:hover{color:var(--color-text-primary)}
+.panel{display:none}.panel.active{display:block}
+
+.sev-crit{background:#FCEBEB;color:#791F1F;border:0.5px solid #F09595;font-size:10px;padding:2px 7px;border-radius:3px;font-weight:500;white-space:nowrap}
+.sev-warn{background:#FAEEDA;color:#633806;border:0.5px solid #EF9F27;font-size:10px;padding:2px 7px;border-radius:3px;font-weight:500;white-space:nowrap}
+.sev-ok{background:#E1F5EE;color:#085041;border:0.5px solid #5DCAA5;font-size:10px;padding:2px 7px;border-radius:3px;font-weight:500;white-space:nowrap}
+.sev-info{background:#E6F1FB;color:#0C447C;border:0.5px solid #85B7EB;font-size:10px;padding:2px 7px;border-radius:3px;font-weight:500;white-space:nowrap}
+
+.pipe-flow{display:flex;align-items:center;gap:0;margin-bottom:20px;flex-wrap:nowrap;overflow-x:auto;padding:4px 0}
+.pipe-node{display:flex;flex-direction:column;align-items:center;min-width:110px}
+.pipe-box{padding:8px 10px;border-radius:6px;text-align:center;font-size:11px;font-weight:500;width:100px;border:0.5px solid}
+.pipe-box.ok{background:#E1F5EE;color:#085041;border-color:#5DCAA5}
+.pipe-box.warn{background:#FAEEDA;color:#633806;border-color:#EF9F27}
+.pipe-box.crit{background:#FCEBEB;color:#791F1F;border-color:#F09595}
+.pipe-box.dead{background:var(--color-background-secondary);color:var(--color-text-tertiary);border-color:var(--color-border-tertiary);text-decoration:line-through}
+.pipe-sub{font-size:10px;color:var(--color-text-secondary);margin-top:4px;text-align:center;max-width:110px}
+.pipe-arrow{font-size:16px;color:var(--color-text-tertiary);margin:0 2px;flex-shrink:0;padding-bottom:18px}
+.pipe-arrow.dead{color:#F09595}
+
+.issue-card{border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);padding:12px 14px;margin-bottom:10px}
+.issue-hdr{display:flex;align-items:flex-start;gap:8px;margin-bottom:6px}
+.issue-title{font-weight:500;font-size:13px;flex:1}
+.issue-body{font-size:12px;color:var(--color-text-secondary);line-height:1.6}
+code{font-family:var(--font-mono);font-size:11px;background:var(--color-background-secondary);padding:1px 4px;border-radius:3px;border:0.5px solid var(--color-border-tertiary)}
+pre{font-family:var(--font-mono);font-size:11px;background:var(--color-background-secondary);padding:10px 12px;border-radius:var(--border-radius-md);border:0.5px solid var(--color-border-tertiary);overflow-x:auto;line-height:1.6;margin-top:8px;color:var(--color-text-primary)}
+.fix{margin-top:8px;padding:8px 10px;background:var(--color-background-secondary);border-left:2px solid #5DCAA5;border-radius:0 var(--border-radius-md) var(--border-radius-md) 0;font-size:11.5px;line-height:1.55}
+.fix strong{color:#085041}
+
+.metrics-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-bottom:14px}
+.m-card{padding:10px 12px;background:var(--color-background-secondary);border-radius:var(--border-radius-md)}
+.m-val{font-size:22px;font-weight:500;font-family:var(--font-mono)}
+.m-lbl{font-size:10px;color:var(--color-text-secondary);margin-top:2px}
+.m-tgt{font-size:10px;margin-top:2px;font-family:var(--font-mono)}
+
+.log-block{font-family:var(--font-mono);font-size:11px;background:var(--color-background-secondary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);padding:12px;line-height:1.8}
+.log-stage{color:#1D9E75;font-weight:500}
+.log-key{color:#185FA5}
+.log-val{color:var(--color-text-primary)}
+.log-err{color:#791F1F}
+.log-sep{color:var(--color-text-tertiary)}
+
+.rec-card{border-left:3px solid;padding:10px 14px;margin-bottom:10px;border-radius:0 var(--border-radius-md) var(--border-radius-md) 0;background:var(--color-background-secondary)}
+.rec-card.r1{border-color:#1D9E75}
+.rec-card.r2{border-color:#534AB7}
+.rec-card.r3{border-color:#BA7517}
+.rec-head{font-weight:500;font-size:13px;margin-bottom:5px}
+.rec-body{font-size:12px;color:var(--color-text-secondary);line-height:1.6}
+
+.thresh-table{width:100%;border-collapse:collapse;font-size:12px;font-family:var(--font-mono)}
+.thresh-table th{text-align:left;padding:5px 8px;border-bottom:1px solid var(--color-border-secondary);font-size:11px;color:var(--color-text-secondary);font-weight:500}
+.thresh-table td{padding:5px 8px;border-bottom:0.5px solid var(--color-border-tertiary)}
+.thresh-table tr.highlight td{background:#E1F5EE;color:#085041}
+.thresh-table tr.bad td{background:#FCEBEB;color:#791F1F}
+</style>
+
+<div class="wrap">
+<h2 style="font-size:0;position:absolute">Pipeline critique report for CIC-DDoS2019 ML training pipeline</h2>
+
+<div class="tab-bar">
+  <div class="tab active" onclick="switchTab('arch')">Architecture</div>
+  <div class="tab" onclick="switchTab('data')">Dataset issues</div>
+  <div class="tab" onclick="switchTab('log')">Log template</div>
+  <div class="tab" onclick="switchTab('rec')">Recommendations</div>
+</div>
+
+<div id="arch" class="panel active">
+  <div class="pipe-flow">
+    <div class="pipe-node">
+      <div class="pipe-box ok">w3_preprocess</div>
+      <div class="pipe-sub">OK — but apply() is O(n) slow</div>
+    </div>
+    <div class="pipe-arrow">→</div>
+    <div class="pipe-node">
+      <div class="pipe-box warn">w4_train</div>
+      <div class="pipe-sub">LE re-fit each script — risk</div>
+    </div>
+    <div class="pipe-arrow dead">→</div>
+    <div class="pipe-node">
+      <div class="pipe-box dead">w5_optimize</div>
+      <div class="pipe-sub">Model never saved — orphaned</div>
+    </div>
+    <div class="pipe-arrow">→</div>
+    <div class="pipe-node">
+      <div class="pipe-box warn">w5_tune</div>
+      <div class="pipe-sub">Weight clipping made it worse</div>
+    </div>
+    <div class="pipe-arrow">→</div>
+    <div class="pipe-node">
+      <div class="pipe-box crit">w5_threshold</div>
+      <div class="pipe-sub">0.1% FPR target unreachable</div>
+    </div>
+  </div>
+
+  <div class="metrics-grid">
+    <div class="m-card">
+      <div class="m-val" style="color:#791F1F">0.7606</div>
+      <div class="m-lbl">BENIGN-F1 (final tuned)</div>
+      <div class="m-tgt" style="color:#791F1F">target: ≥ 0.90 ✗</div>
+    </div>
+    <div class="m-card">
+      <div class="m-val" style="color:#791F1F">0.322%</div>
+      <div class="m-lbl">Best FPR (threshold=0.01)</div>
+      <div class="m-tgt" style="color:#791F1F">target: &lt; 0.10% ✗</div>
+    </div>
+    <div class="m-card">
+      <div class="m-val" style="color:#BA7517">0.4184</div>
+      <div class="m-lbl">Macro-F1 (tuned model)</div>
+      <div class="m-tgt" style="color:#BA7517">target: ≥ 0.95 ✗</div>
+    </div>
+  </div>
+
+  <div class="issue-card">
+    <div class="issue-hdr"><span class="sev-crit">critical</span><span class="issue-title">w5_optimize trains a model that is never saved — the stage is orphaned</span></div>
+    <div class="issue-body">
+      <code>w5_optimize.py</code> trains <code>xgb_optimized</code> with <code>max_depth=6</code> and produces the confusion matrix, but it is <strong>never persisted to disk</strong>. Then <code>w5_tune.py</code> trains a completely independent model from scratch (<code>max_depth=5</code>) and saves it as <code>xgboost_final.json</code>. The optimize → tune relationship you intended is simply two separate training runs. All compute spent in w5_optimize that isn't the confusion matrix is wasted. The pipeline is not sequential — it is parallel and disconnected.
+    </div>
+    <div class="fix"><strong>Fix:</strong> Either save the optimized model with <code>xgb_optimized.save_model('xgb_optimized.json')</code> and load it in w5_tune for further fine-tuning, or collapse the two stages into one script with a clear progression: train baseline → evaluate → adjust hyperparameters → retrain → save final.</div>
+  </div>
+
+  <div class="issue-card">
+    <div class="issue-hdr"><span class="sev-crit">critical</span><span class="issue-title">LabelEncoder is re-fit from scratch in every script — silent label-mapping risk</span></div>
+    <div class="issue-body">
+      Each of w4_train, w5_optimize, w5_tune, and w5_threshold calls <code>le.fit_transform(y_train)</code> or <code>le.fit_transform(y_val)</code> independently. Since sklearn sorts class names alphabetically the mapping is currently consistent, but this breaks silently if any class is absent from a data split. For example: if the stratified split puts zero <code>WEBDDOS</code> rows (only 439 total) in one split, that script's LE maps classes differently and all numeric labels become wrong with no error thrown.
+    </div>
+    <div class="fix"><strong>Fix:</strong> Fit LabelEncoder once in w3_preprocess.py, save with <code>joblib.dump(le, 'label_encoder.pkl')</code>, and load it in every downstream script. Never re-fit.</div>
+  </div>
+
+  <div class="issue-card">
+    <div class="issue-hdr"><span class="sev-warn">warning</span><span class="issue-title">Per-class imputation uses <code>apply(lambda row:…)</code> — catastrophically slow at 70M rows</span></div>
+    <div class="issue-body">
+      The imputation code in w3_preprocess.py iterates every row with a Python-level lambda on a 70M-row DataFrame. This is O(n) in pure Python and will take tens of minutes to hours. It also causes the imputation to run three times (train, val, test). The log shows this step completed without timing — that's suspicious; it may have been tested on a subset.
+    </div>
+    <div class="fix"><strong>Fix — vectorised, 1000× faster:</strong>
+<pre>class_medians = X_train.groupby('Label', observed=True)[col].median()
+X_train[col] = X_train[col].fillna(X_train['Label'].map(class_medians))
+X_val[col]   = X_val[col].fillna(X_val['Label'].map(class_medians))
+X_test[col]  = X_test[col].fillna(X_test['Label'].map(class_medians))</pre>
+    </div>
+  </div>
+
+  <div class="issue-card">
+    <div class="issue-hdr"><span class="sev-warn">warning</span><span class="issue-title">Weight clipping in w5_tune made BENIGN-F1 <em>worse</em>, not better (0.7950 → 0.7606)</span></div>
+    <div class="issue-body">
+      The clip rationale was that extreme weights for rare classes (WEBDDOS: 439 rows → weight ≈ 160,000×) were "destroying tree logic." But the clipping reduced BENIGN weight indirectly, since BENIGN's balanced weight is already moderate. The confusion matrix shows the real problem: <code>PORTMAP</code> (precision=0.02), <code>WEBDDOS</code> (precision=0.02), and <code>UDPLAG</code> (precision=0.01) have near-zero precision — they are massively <em>over-predicted</em>. These classes flood the confusion matrix with false positives that contaminate BENIGN evaluation.
+    </div>
+    <div class="fix"><strong>Fix:</strong> Instead of clipping all weights, drop or merge <code>UDPLAG</code> (1,873 rows) and <code>WEBDDOS</code> (439 rows) into an <code>OTHER_ATTACK</code> group before training. These counts are too small for a tree model to learn meaningful boundaries from.</div>
+  </div>
+</div>
+
+<div id="data" class="panel">
+  <div class="issue-card">
+    <div class="issue-hdr"><span class="sev-crit">critical</span><span class="issue-title">No threshold achieves the 0.1% FPR target — the fundamental model hasn't converged</span></div>
+    <div class="issue-body">The threshold sweep is unambiguous. The best achievable FPR with this model is <strong>0.322%</strong> at threshold=0.01, which misses 665,095 attacks. The 0.1% FPR target cannot be met at any threshold:</div>
+    <table class="thresh-table" style="margin-top:10px">
+      <thead><tr><th>Threshold (P_BENIGN ≥)</th><th>FPR</th><th>Missed attacks</th><th>Verdict</th></tr></thead>
+      <tbody>
+        <tr class="bad"><td>0.01</td><td>0.322%</td><td>665,095</td><td>FPR 3× over target</td></tr>
+        <tr class="bad"><td>0.02</td><td>1.048%</td><td>347,999</td><td>FPR 10× over target</td></tr>
+        <tr class="bad"><td>0.05</td><td>2.366%</td><td>92,134</td><td>Unusable</td></tr>
+        <tr class="bad"><td>0.10 – 0.50</td><td>2.5–6.8%</td><td>↓</td><td>Unusable</td></tr>
+      </tbody>
+    </table>
+    <div class="fix"><strong>Root cause:</strong> The 6-feature set (FEATURE_SET_V1) lacks sufficient discriminators to cleanly separate BENIGN from low-rate attacks like PORTMAP and LDAP. The confusion matrix shows BENIGN rows being predicted as DRDOS_MSSQL and SYN — both have overlapping flow byte counts. <strong>Fix:</strong> Add <code>SYN Flag Count</code> and <code>ACK Flag Count</code> to the feature set (the Week 5 ablation that was never run per the plan).</div>
+  </div>
+
+  <div class="issue-card">
+    <div class="issue-hdr"><span class="sev-crit">critical</span><span class="issue-title">Feature importance order contradicts EDA — <code>Flow Bytes/s</code> ranked #1 by eta² but #3 by XGBoost gain</span></div>
+    <div class="issue-body">
+      Your EDA established <code>Flow Bytes/s</code> as the most discriminative feature (η²=0.6305). XGBoost's gain importance chart ranks it third behind <code>Total Length of Fwd Packets</code> and <code>Total Backward Packets</code>. This divergence has a specific cause: after <code>log1p</code> and MinMax scaling, the raw eta² advantage of <code>Flow Bytes/s</code> compresses. The 3.08% NaN imputation also introduced artificial values. This doesn't invalidate the model, but it means your thesis claim about "data-validated features from EDA" is now partially undermined — XGBoost learned a different ranking than eta² predicted.
+    </div>
+    <div class="fix"><strong>Fix for thesis:</strong> Explicitly note in model_card.md that post-transform gain importance is the operative metric, not eta². Run a permutation importance test (which is transformation-invariant) to get a clean ranking.</div>
+  </div>
+
+  <div class="issue-card">
+    <div class="issue-hdr"><span class="sev-warn">warning</span><span class="issue-title">Rare classes (WEBDDOS=439, UDPLAG=1873) poison precision across the board</span></div>
+    <div class="issue-body">
+      From the classification report: PORTMAP precision=0.02, WEBDDOS precision=0.02, UDPLAG precision=0.01. These classes are so rare that the model learns to predict them promiscuously — it's better rewarded for high recall than controlling precision. Every false PORTMAP or WEBDDOS prediction is a false positive for every other class. This cascades into BENIGN being predicted as these classes (visible in the confusion matrix's off-diagonal BENIGN row spread).
+    </div>
+    <div class="fix"><strong>Fix:</strong> Before training, merge WEBDDOS, UDPLAG, and UDPLag (which are 439, 1873, and clearly duplicated classes) into a single <code>RARE_ATTACK</code> label. This reduces from 19 to 17 classes and removes the precision sinks.</div>
+  </div>
+
+  <div class="issue-card">
+    <div class="issue-hdr"><span class="sev-warn">warning</span><span class="issue-title"><code>log1p</code> applied outside the ONNX pipeline — inference time transform mismatch risk</span></div>
+    <div class="issue-body">
+      <code>w3_preprocess.py</code> applies <code>log1p</code> and <code>MinMaxScaler</code> before saving to parquet. This means the ONNX model receives pre-transformed data. When the Go controller feeds raw eBPF counter values to the ONNX model at inference time, it must replicate the exact same <code>log1p → MinMax</code> sequence in Go before calling the model. This is the #1 source of silent inference errors in production.
+    </div>
+    <div class="fix"><strong>Fix (as specified in the revised plan):</strong> Rebuild the pipeline for Week 6 so that <code>log1p</code> and the scaler are embedded inside the ONNX graph using <code>sklearn.pipeline.Pipeline</code> → <code>skl2onnx.convert_sklearn</code>. Train on raw (unscaled) parquet. Go passes raw values; the ONNX model handles all transforms internally.</div>
+  </div>
+</div>
+
+<div id="log" class="panel">
+  <p style="font-size:12px;color:var(--color-text-secondary);margin-bottom:12px">Structured log template for LOG_TRAINING.TXT. Each stage appends its block. Never overwrite — only append. All timestamps in ISO 8601 UTC.</p>
+
+  <div class="log-block">
+<span class="log-sep">══════════════════════════════════════════════════════════</span>
+<span class="log-stage">STAGE: W3_PREPROCESS</span>
+<span class="log-sep">══════════════════════════════════════════════════════════</span>
+<span class="log-key">timestamp_start   </span><span class="log-val">: 2024-11-15T08:21:04Z</span>
+<span class="log-key">timestamp_end     </span><span class="log-val">: 2024-11-15T09:14:37Z</span>
+<span class="log-key">python_version    </span><span class="log-val">: 3.11.5</span>
+<span class="log-key">host_machine      </span><span class="log-val">: WIN-DDOS-DEV / RAM: 32GB</span>
+<span class="log-key">source_files      </span><span class="log-val">: 18 CSV files [list hashes here]</span>
+<span class="log-key">total_rows_raw    </span><span class="log-val">: 70427637</span>
+<span class="log-key">features_selected </span><span class="log-val">: [Flow Bytes/s, Total Length of Fwd Packets, ...]</span>
+<span class="log-key">rows_after_drop   </span><span class="log-val">: 70427637  (0 rows removed)</span>
+<span class="log-key">null_imputed_cols </span><span class="log-val">: Flow Bytes/s=2170750, Flow Packets/s=2170750</span>
+<span class="log-key">impute_strategy   </span><span class="log-val">: per_class_median (fitted on train only)</span>
+<span class="log-key">train_rows        </span><span class="log-val">: 49299345  BENIGN: 79680 (0.162%)</span>
+<span class="log-key">val_rows          </span><span class="log-val">: 10564146  BENIGN: 17074</span>
+<span class="log-key">test_rows         </span><span class="log-val">: 10564146  BENIGN: 17074</span>
+<span class="log-key">scale_pos_weight  </span><span class="log-val">: 45746.2</span>
+<span class="log-key">transforms_applied</span><span class="log-val">: log1p (continuous cols), MinMaxScaler</span>
+<span class="log-err">WARNING           : log1p applied BEFORE parquet save — must replicate at ONNX export</span>
+<span class="log-key">artifacts_saved   </span><span class="log-val">:</span>
+<span class="log-val">  scaler.pkl          sha256: [hash]</span>
+<span class="log-val">  label_encoder.pkl   sha256: [hash]  &lt;-- ADD THIS</span>
+<span class="log-val">  class_medians.pkl   sha256: [hash]  &lt;-- ADD THIS</span>
+<span class="log-val">  train_processed.parquet</span>
+<span class="log-val">  val_processed.parquet</span>
+<span class="log-val">  test_holdout_processed.parquet</span>
+<span class="log-sep">STATUS: SUCCESS</span>
+
+<span class="log-sep">══════════════════════════════════════════════════════════</span>
+<span class="log-stage">STAGE: W4_TRAIN  (baseline comparison)</span>
+<span class="log-sep">══════════════════════════════════════════════════════════</span>
+<span class="log-key">timestamp         </span><span class="log-val">: 2024-11-15T09:15:02Z</span>
+<span class="log-key">label_encoder_src </span><span class="log-val">: label_encoder.pkl  &lt;-- LOAD, never re-fit</span>
+<span class="log-key">imbalance_strategy</span><span class="log-val">: compute_sample_weight balanced</span>
+<span class="log-key">baseline_results  </span><span class="log-val">:</span>
+<span class="log-val">  Decision Tree  macro_f1=0.3024 benign_f1=0.0716 fpr=44.70% size=8.3KB   inf_ms=0.0001</span>
+<span class="log-val">  Random Forest  macro_f1=0.2893 benign_f1=0.1842 fpr=37.07% size=143KB   inf_ms=0.0012</span>
+<span class="log-val">  XGBoost        macro_f1=0.3995 benign_f1=0.6943 fpr=10.57% size=3067KB  inf_ms=0.0048</span>
+<span class="log-key">selected_model    </span><span class="log-val">: XGBoost (highest BENIGN-F1)</span>
+<span class="log-err">WARNING           : XGBoost size=3067KB exceeds 800KB target. max_depth or n_estimators must be reduced.</span>
+<span class="log-key">artifacts_saved   </span><span class="log-val">: feature_importance_v1.png</span>
+<span class="log-sep">STATUS: SUCCESS — proceed to W5_OPTIMIZE</span>
+
+<span class="log-sep">══════════════════════════════════════════════════════════</span>
+<span class="log-stage">STAGE: W5_OPTIMIZE</span>
+<span class="log-sep">══════════════════════════════════════════════════════════</span>
+<span class="log-key">timestamp         </span><span class="log-val">: 2024-11-15T10:02:11Z</span>
+<span class="log-key">changes_from_w4   </span><span class="log-val">: max_depth 4→6, n_estimators 100→150</span>
+<span class="log-key">macro_f1          </span><span class="log-val">: 0.4245  (delta: +0.0250 from baseline)</span>
+<span class="log-key">benign_f1         </span><span class="log-val">: 0.7950  (delta: +0.0007 from baseline)</span>
+<span class="log-key">fpr               </span><span class="log-val">: 7.895%  (delta: -2.677 from baseline)</span>
+<span class="log-key">model_size_kb     </span><span class="log-val">: 10153.6  &lt;-- EXCEEDS 800KB HARD LIMIT</span>
+<span class="log-err">BLOCKER: Model size 10153KB >> 800KB target. Do not proceed without size fix.</span>
+<span class="log-err">BLOCKER: BENIGN-F1 0.7950 < 0.90 target. MVP-1 gate NOT passed.</span>
+<span class="log-err">BUG: Model not saved to disk — xgb_optimized is orphaned. Add: xgb_optimized.save_model('xgb_optimized.json')</span>
+<span class="log-key">artifacts_saved   </span><span class="log-val">: confusion_matrix.png  [MODEL NOT SAVED — BUG]</span>
+<span class="log-sep">STATUS: FAILED — blockers present. Review before W5_TUNE.</span>
+
+<span class="log-sep">══════════════════════════════════════════════════════════</span>
+<span class="log-stage">STAGE: W5_TUNE</span>
+<span class="log-sep">══════════════════════════════════════════════════════════</span>
+<span class="log-key">timestamp         </span><span class="log-val">: 2024-11-15T11:44:09Z</span>
+<span class="log-key">changes_applied   </span><span class="log-val">: weight_clipping max=100, max_depth 6→5, softprob objective</span>
+<span class="log-key">macro_f1          </span><span class="log-val">: 0.4184  (delta: -0.0061 vs w5_optimize — REGRESSION)</span>
+<span class="log-key">benign_f1         </span><span class="log-val">: 0.7606  (delta: -0.0344 vs w5_optimize — REGRESSION)</span>
+<span class="log-key">fpr_at_0.50       </span><span class="log-val">: 6.776%</span>
+<span class="log-key">false_alarms      </span><span class="log-val">: 1157 of 17074 BENIGN flows incorrectly blocked</span>
+<span class="log-err">REGRESSION: weight clipping reduced BENIGN-F1 by 0.034. Revert or investigate.</span>
+<span class="log-key">artifacts_saved   </span><span class="log-val">: xgboost_final.json  sha256: [hash]</span>
+<span class="log-sep">STATUS: FAILED — BENIGN-F1 regressed. Do not use as production model.</span>
+
+<span class="log-sep">══════════════════════════════════════════════════════════</span>
+<span class="log-stage">STAGE: W5_THRESHOLD</span>
+<span class="log-sep">══════════════════════════════════════════════════════════</span>
+<span class="log-key">timestamp         </span><span class="log-val">: 2024-11-15T12:01:55Z</span>
+<span class="log-key">model_loaded      </span><span class="log-val">: xgboost_final.json</span>
+<span class="log-key">threshold_sweep   </span><span class="log-val">:</span>
+<span class="log-val">  0.01: FPR=0.322%  missed=665095  [CLOSEST to target but misses 665K attacks]</span>
+<span class="log-val">  0.02: FPR=1.048%  missed=347999  [FPR 10× over target]</span>
+<span class="log-err">VERDICT: No threshold achieves FPR &lt; 0.10% target. Model needs retraining.</span>
+<span class="log-key">recommended_thresh</span><span class="log-val">: 0.01 (best available; document as limitation)</span>
+<span class="log-key">artifacts_saved   </span><span class="log-val">: threshold_analysis.json  &lt;-- ADD: save sweep results to JSON, not just stdout</span>
+<span class="log-sep">STATUS: FAILED — FPR target not met. Escalate to retraining with expanded feature set.</span>
+  </div>
+</div>
+
+<div id="rec" class="panel">
+  <div class="rec-card r1">
+    <div class="rec-head">Recommendation 1 — Collapse optimize+tune into a single gated script with automatic rollback</div>
+    <div class="rec-body">
+      The current design has two separate training runs with no mechanism to compare them before the next step runs. Replace w5_optimize and w5_tune with a single <code>w5_train_final.py</code> that runs training experiments sequentially, compares BENIGN-F1 after each, and only advances if the metric improves. If a configuration regresses (as weight clipping did), it automatically reverts to the previous checkpoint.
+<pre>EXPERIMENTS = [
+    {"max_depth":4, "n_estimators":100, "weight_clip":None},   # baseline
+    {"max_depth":6, "n_estimators":150, "weight_clip":None},   # optimize
+    {"max_depth":5, "n_estimators":100, "weight_clip":100.0},  # tune
+]
+best_benign_f1 = 0
+for i, cfg in enumerate(EXPERIMENTS):
+    model = train(cfg)
+    metrics = evaluate(model, X_val, y_val)
+    log_stage(f"EXPERIMENT_{i}", cfg, metrics)
+    if metrics["benign_f1"] > best_benign_f1:
+        best_benign_f1 = metrics["benign_f1"]
+        model.save_model("xgb_best_checkpoint.json")
+        log("CHECKPOINT: new best saved")
+    else:
+        log("ROLLBACK: config regressed, reverting to previous checkpoint")</pre>
+    </div>
+  </div>
+
+  <div class="rec-card r2">
+    <div class="rec-head">Recommendation 2 — Feed threshold sweep results directly into a deployment config JSON</div>
+    <div class="rec-body">
+      Currently w5_threshold.py prints the sweep to stdout and nothing is saved. The Go controller needs a machine-readable threshold to use at inference time. Automate the transition: after the sweep, the script selects the optimal threshold (lowest threshold where FPR ≤ target), writes it to <code>deploy_config.json</code>, and the Go controller reads this file at startup.
+<pre>TARGETS = {"max_fpr_pct": 0.10, "max_missed_attack_pct": 5.0}
+
+best = select_threshold(sweep_results, TARGETS)
+config = {
+    "model_path": "xgboost_final.onnx",
+    "threshold":  best["threshold"],
+    "achieved_fpr_pct": best["fpr"],
+    "achieved_missed_attacks": best["missed"],
+    "target_met": best["fpr"] <= TARGETS["max_fpr_pct"],
+    "generated_at": datetime.utcnow().isoformat()
+}
+with open("deploy_config.json","w") as f:
+    json.dump(config, f, indent=2)
+
+if not config["target_met"]:
+    raise SystemExit("PIPELINE BLOCKED: FPR target not met. Retrain required.")</pre>
+      The <code>raise SystemExit</code> prevents Week 6 ONNX export from running on a model that hasn't passed the gate — enforcing the MVP criteria automatically.
+    </div>
+  </div>
+
+  <div class="rec-card r3">
+    <div class="rec-head">Recommendation 3 — Merge rare classes and add SYN/ACK flags before the next training run</div>
+    <div class="rec-body">
+      The three most urgent changes to break through the current FPR ceiling, in priority order:
+<pre># 1. Merge near-empty classes BEFORE encoding (add to w3_preprocess.py)
+RARE_ATTACK_CLASSES = {'WEBDDOS', 'UDPLAG', 'UDPLAG'}
+df['Label'] = df['Label'].apply(
+    lambda x: 'RARE_ATTACK' if x in RARE_ATTACK_CLASSES else x)
+
+# 2. Add SYN + ACK flags to FEATURE_SET_V1 (protocol ablation from plan)
+FEATURES_V2 = FEATURES_V1 + ['SYN Flag Count', 'ACK Flag Count']
+
+# 3. Run Protocol ablation: train once with Protocol, once without
+#    Compare BENIGN-F1 delta — if > 5pts, remove Protocol from V2</pre>
+      The class merge eliminates three precision sinks. The flag features add L4-state information that directly separates SYN floods (SYN=N, ACK=0) from legitimate traffic (SYN=1, ACK=0 → SYN=0, ACK=1). These two changes together are the most likely path to BENIGN-F1 ≥ 0.90.
+    </div>
+  </div>
+</div>
+</div>
+
+<script>
+function switchTab(id){
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  event.target.classList.add('active');
+}
+</script>

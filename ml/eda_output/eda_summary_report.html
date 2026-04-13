@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EDA Summary — CIC-DDoS2019</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap');
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-weight: 300;
+    background: #f5f4f0;
+    color: #1a1a1a;
+    padding: 32px 24px;
+    font-size: 13px;
+    line-height: 1.6;
+  }
+
+  .page {
+    max-width: 860px;
+    margin: 0 auto;
+    background: #ffffff;
+    border: 1px solid #d0cfc8;
+    padding: 40px 48px;
+  }
+
+  /* Header */
+  .doc-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    border-bottom: 2px solid #1a1a1a;
+    padding-bottom: 14px;
+    margin-bottom: 24px;
+  }
+  .doc-title { font-size: 18px; font-weight: 600; letter-spacing: -0.3px; }
+  .doc-subtitle { font-size: 12px; color: #666; font-family: 'IBM Plex Mono', monospace; margin-top: 3px; }
+  .doc-meta { text-align: right; font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: #888; line-height: 1.8; }
+
+  /* Sections */
+  .section { margin-bottom: 22px; }
+  .section-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: #888;
+    margin-bottom: 10px;
+    padding-bottom: 5px;
+    border-bottom: 1px solid #e8e7e2;
+  }
+  .section-num {
+    display: inline-block;
+    background: #1a1a1a;
+    color: #fff;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 9px;
+    padding: 1px 5px;
+    margin-right: 6px;
+    letter-spacing: 0.5px;
+  }
+
+  /* Two-column layout */
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  .three-col { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
+
+  /* Stat cards */
+  .stat-card {
+    background: #f5f4f0;
+    border: 1px solid #d8d7d0;
+    padding: 12px 14px;
+  }
+  .stat-val { font-size: 20px; font-weight: 600; letter-spacing: -0.5px; font-family: 'IBM Plex Mono', monospace; }
+  .stat-label { font-size: 10px; color: #888; text-transform: uppercase; letter-spacing: 0.8px; margin-top: 2px; }
+
+  /* Class table */
+  .class-table { width: 100%; border-collapse: collapse; font-size: 11.5px; }
+  .class-table th {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    font-weight: 500;
+    color: #888;
+    text-align: left;
+    padding: 4px 8px 4px 0;
+    border-bottom: 1px solid #d0cfc8;
+    letter-spacing: 0.5px;
+  }
+  .class-table td { padding: 3px 8px 3px 0; border-bottom: 1px solid #eeecea; vertical-align: middle; }
+  .class-table tr:last-child td { border-bottom: none; }
+  .bar-bg { background: #eeecea; height: 5px; width: 100%; border-radius: 2px; }
+  .bar-fill { height: 5px; border-radius: 2px; background: #1a1a1a; }
+  .bar-fill.attack { background: #c0392b; }
+  .bar-fill.benign { background: #27ae60; }
+  .pct-label { font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: #555; white-space: nowrap; }
+  .badge {
+    display: inline-block;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 9px;
+    padding: 1px 5px;
+    border-radius: 2px;
+    letter-spacing: 0.3px;
+  }
+  .badge-warn { background: #fef3cd; color: #7d5a00; border: 1px solid #f0c040; }
+  .badge-crit { background: #fde8e8; color: #8b1a1a; border: 1px solid #e88; }
+  .badge-ok   { background: #e8f5e9; color: #1b5e20; border: 1px solid #81c784; }
+
+  /* Feature cards */
+  .feat-card {
+    border: 1px solid #d8d7d0;
+    padding: 10px 12px;
+    position: relative;
+  }
+  .feat-rank {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    color: #bbb;
+    position: absolute;
+    top: 10px;
+    right: 10px;
+  }
+  .feat-name { font-weight: 600; font-size: 12.5px; margin-bottom: 3px; }
+  .feat-eta {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    color: #c0392b;
+    font-weight: 500;
+    margin-bottom: 6px;
+  }
+  .eta-bar-bg { background: #f0eeea; height: 3px; width: 100%; margin-bottom: 6px; }
+  .eta-bar-fill { height: 3px; background: #c0392b; }
+  .feat-desc { font-size: 11px; color: #555; line-height: 1.5; }
+
+  /* Preprocessing */
+  .preproc-row { display: flex; gap: 8px; align-items: flex-start; margin-bottom: 8px; }
+  .preproc-icon {
+    width: 20px; height: 20px;
+    background: #1a1a1a;
+    color: #fff;
+    font-size: 9px;
+    font-family: 'IBM Plex Mono', monospace;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+  .preproc-text { font-size: 12px; line-height: 1.5; }
+  .preproc-text strong { font-weight: 600; }
+  code {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10.5px;
+    background: #f0eeea;
+    padding: 1px 4px;
+    border: 1px solid #d8d7d0;
+    border-radius: 2px;
+  }
+
+  /* Insight bullets */
+  .insight-card {
+    border-left: 3px solid #1a1a1a;
+    padding: 8px 12px;
+    margin-bottom: 8px;
+    background: #fafaf8;
+  }
+  .insight-head { font-weight: 600; font-size: 12px; margin-bottom: 3px; }
+  .insight-body { font-size: 11.5px; color: #444; line-height: 1.5; }
+
+  /* Drop list */
+  .drop-grid { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 4px; }
+  .drop-tag {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 9.5px;
+    background: #fde8e8;
+    color: #8b1a1a;
+    border: 1px solid #e8aaaa;
+    padding: 2px 6px;
+    border-radius: 2px;
+    text-decoration: line-through;
+    text-decoration-color: #c0392b;
+  }
+
+  /* Footer */
+  .doc-footer {
+    border-top: 1px solid #d0cfc8;
+    margin-top: 20px;
+    padding-top: 10px;
+    display: flex;
+    justify-content: space-between;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    color: #aaa;
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <!-- Header -->
+  <div class="doc-header">
+    <div>
+      <div class="doc-title">Exploratory Data Analysis — Week 2 Summary</div>
+      <div class="doc-subtitle">CIC-DDoS2019 · Pre-thesis: Real-Time L3/L4 DDoS Early Warning System</div>
+    </div>
+    <div class="doc-meta">
+      Rows: 70,427,637<br>
+      Columns: 88<br>
+      Classes: 19<br>
+      Sample (corr): 507,304
+    </div>
+  </div>
+
+  <!-- Section 1: Dataset Overview -->
+  <div class="section">
+    <div class="section-label"><span class="section-num">01</span>Dataset Overview &amp; Target Distribution</div>
+    <div class="three-col" style="margin-bottom:14px;">
+      <div class="stat-card">
+        <div class="stat-val">70.4M</div>
+        <div class="stat-label">Total flow records</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-val">45,746:1</div>
+        <div class="stat-label">Imbalance ratio</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-val">0.162%</div>
+        <div class="stat-label">BENIGN share <span class="badge badge-crit">critical</span></div>
+      </div>
+    </div>
+
+    <table class="class-table">
+      <thead>
+        <tr>
+          <th style="width:28%">Class</th>
+          <th style="width:10%">Count</th>
+          <th style="width:8%">Share</th>
+          <th style="width:34%">Distribution</th>
+          <th style="width:12%">Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td><strong>TFTP</strong></td><td>20,082,580</td><td class="pct-label">28.5%</td><td><div class="bar-bg"><div class="bar-fill attack" style="width:100%"></div></div></td><td><span class="badge badge-warn">majority</span></td></tr>
+        <tr><td>Syn</td><td>6,473,789</td><td class="pct-label">9.2%</td><td><div class="bar-bg"><div class="bar-fill attack" style="width:32%"></div></div></td><td></td></tr>
+        <tr><td>MSSQL</td><td>5,787,453</td><td class="pct-label">8.2%</td><td><div class="bar-bg"><div class="bar-fill attack" style="width:29%"></div></div></td><td></td></tr>
+        <tr><td>DrDoS_SNMP</td><td>5,159,870</td><td class="pct-label">7.3%</td><td><div class="bar-bg"><div class="bar-fill attack" style="width:26%"></div></div></td><td></td></tr>
+        <tr><td>DrDoS_DNS</td><td>5,071,011</td><td class="pct-label">7.2%</td><td><div class="bar-bg"><div class="bar-fill attack" style="width:25%"></div></div></td><td></td></tr>
+        <tr><td>DrDoS_MSSQL + 8 others</td><td>~28M</td><td class="pct-label">~40%</td><td><div class="bar-bg"><div class="bar-fill attack" style="width:55%"></div></div></td><td></td></tr>
+        <tr><td><strong>BENIGN</strong></td><td>113,828</td><td class="pct-label">0.162%</td><td><div class="bar-bg"><div class="bar-fill benign" style="width:0.6%"></div></div></td><td><span class="badge badge-crit">rarest legit</span></td></tr>
+        <tr><td>UDPLag</td><td>1,873</td><td class="pct-label">0.003%</td><td><div class="bar-bg"><div class="bar-fill attack" style="width:0.01%"></div></div></td><td><span class="badge badge-crit">near-absent</span></td></tr>
+        <tr><td>WebDDoS</td><td>439</td><td class="pct-label">&lt;0.001%</td><td><div class="bar-bg"><div class="bar-fill attack" style="width:0.002%"></div></div></td><td><span class="badge badge-crit">minority</span></td></tr>
+      </tbody>
+    </table>
+    <p style="font-size:11.5px; color:#555; margin-top:8px; line-height:1.6;">
+      The dataset presents a <strong>severe multi-class imbalance</strong>. The primary modeling challenge is not detecting attacks (which dominate), but correctly identifying the 113,828 BENIGN flows without triggering false positives. SMOTE is impractical at 70M rows; <strong>class-weighted loss</strong> (<code>scale_pos_weight</code> in XGBoost) is the primary strategy. SMOTE will be applied only as an ablation comparison on a down-sampled subset.
+    </p>
+  </div>
+
+  <!-- Section 2: Discriminative Features -->
+  <div class="section">
+    <div class="section-label"><span class="section-num">02</span>Most Discriminative Features (η² via Welford streaming)</div>
+    <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px; margin-bottom:8px;">
+
+      <div class="feat-card">
+        <span class="feat-rank">η²=0.6305</span>
+        <div class="feat-name">Flow Bytes/s</div>
+        <div class="eta-bar-bg"><div class="eta-bar-fill" style="width:100%"></div></div>
+        <div class="feat-desc">Highest discriminative power. DrDoS_SNMP clusters sharply near 1.5×10⁹ B/s; Syn floods sit near zero. Reflects amplification factor directly. <span class="badge badge-crit">3.08% nulls → impute</span></div>
+      </div>
+
+      <div class="feat-card">
+        <span class="feat-rank">η²=0.3827</span>
+        <div class="feat-name">Total Length of Fwd Packets</div>
+        <div class="eta-bar-bg"><div class="eta-bar-fill" style="width:61%"></div></div>
+        <div class="feat-desc">DrDoS_NetBIOS and TFTP show large cumulative forward bytes; Syn floods are near zero (handshake-only flows). Strong proxy for payload volume per attack type.</div>
+      </div>
+
+      <div class="feat-card">
+        <span class="feat-rank">η²=0.2025</span>
+        <div class="feat-name">Flow Packets/s</div>
+        <div class="eta-bar-bg"><div class="eta-bar-fill" style="width:32%"></div></div>
+        <div class="feat-desc">Sharp modal peaks at ~1×10⁶ pps for DrDoS_SNMP; other classes spread differently. Bimodal behavior across attack types provides strong class separation. <span class="badge badge-crit">3.08% nulls</span></div>
+      </div>
+
+      <div class="feat-card">
+        <span class="feat-rank">η²=0.1514</span>
+        <div class="feat-name">Flow IAT Mean</div>
+        <div class="eta-bar-bg"><div class="eta-bar-fill" style="width:24%"></div></div>
+        <div class="feat-desc">Flood attacks (Syn, UDP) cluster at very low IAT (&lt;10⁵ µs). TFTP and UDP-lag spread to higher IAT values. Separates machine-paced from human/protocol-paced traffic.</div>
+      </div>
+
+      <div class="feat-card">
+        <span class="feat-rank">η²=0.0812</span>
+        <div class="feat-name">Flow Duration</div>
+        <div class="eta-bar-bg"><div class="eta-bar-fill" style="width:13%"></div></div>
+        <div class="feat-desc">Syn floods dominate short durations; TFTP and UDP-lag show long-duration bimodal peaks near 4×10⁷–5×10⁷ µs. Separates persistent volumetric from burst floods. <span class="badge badge-warn">r=0.9999 with Fwd IAT Total</span></div>
+      </div>
+
+      <div class="feat-card" style="border-style:dashed; background:#fafaf8;">
+        <span class="feat-rank">bonus</span>
+        <div class="feat-name">Total Backward Packets</div>
+        <div class="eta-bar-bg"><div class="eta-bar-fill" style="width:8%; background:#888"></div></div>
+        <div class="feat-desc">Discrete integer values 0–6. Syn floods and one-way amplification attacks have 0 backward packets; LDAP/NetBIOS reflections show 1–3. Key for unidirectional detection.</div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Section 3: Preprocessing -->
+  <div class="section">
+    <div class="section-label"><span class="section-num">03</span>Preprocessing &amp; Feature Engineering Strategy</div>
+    <div class="two-col">
+      <div>
+        <div class="preproc-row">
+          <div class="preproc-icon">D1</div>
+          <div class="preproc-text"><strong>Drop identifiers &amp; leakage vectors</strong><br>Remove <code>Flow ID</code>, <code>Source IP</code>, <code>Destination IP</code>, <code>Source Port</code>, <code>Timestamp</code>, <code>Unnamed: 0</code>. These are not flow-level behavioral features.</div>
+        </div>
+        <div class="preproc-row">
+          <div class="preproc-icon">D2</div>
+          <div class="preproc-text"><strong>Drop exact duplicates (r = 1.0000)</strong><br>9 feature pairs are mathematically identical. Keep one from each: drop <code>Subflow Fwd/Bwd Packets</code>, <code>Subflow Fwd/Bwd Bytes</code>, <code>Avg Fwd/Bwd Segment Size</code>, <code>Fwd Packets/s</code>, <code>RST Flag Count</code>, <code>Fwd Header Length.1</code>.</div>
+        </div>
+        <div class="preproc-row">
+          <div class="preproc-icon">D3</div>
+          <div class="preproc-text"><strong>Drop zero-variance / no-separation features</strong><br>Features whose histogram shows all 19 classes collapsing into a single spike at zero with no inter-class spread:</div>
+        </div>
+        <div class="drop-grid">
+          <span class="drop-tag">Bwd IAT Total</span>
+          <span class="drop-tag">Fwd IAT Total</span>
+          <span class="drop-tag">Fwd Avg Bytes/Bulk</span>
+          <span class="drop-tag">Fwd Avg Packets/Bulk</span>
+          <span class="drop-tag">Fwd Avg Bulk Rate</span>
+          <span class="drop-tag">Bwd Avg Bytes/Bulk</span>
+          <span class="drop-tag">Bwd Avg Packets/Bulk</span>
+          <span class="drop-tag">Bwd Avg Bulk Rate</span>
+          <span class="drop-tag">SimillarHTTP</span>
+          <span class="drop-tag">Inbound</span>
+        </div>
+        <p style="font-size:10.5px; color:#888; margin-top:5px;">Note: <code>Fwd IAT Total</code> is dropped because r=0.9999 with <code>Flow Duration</code>; <code>Flow Duration</code> is retained as the primary temporal feature.</p>
+      </div>
+      <div>
+        <div class="preproc-row">
+          <div class="preproc-icon">M1</div>
+          <div class="preproc-text"><strong>Impute missing values</strong><br><code>Flow Bytes/s</code> and <code>Flow Packets/s</code> have 3.08% nulls originating from infinity replacement (division-by-zero in zero-duration flows). Strategy: impute with <strong>per-class median</strong> to avoid cross-class contamination. Set aside NaN rows for post-imputation audit.</div>
+        </div>
+        <div class="preproc-row">
+          <div class="preproc-icon">T1</div>
+          <div class="preproc-text"><strong>Log-transform right-skewed features</strong><br>All retained IAT, byte-count, and rate features show severe right skew (massive spike at zero, long tail). Apply <code>log1p(x)</code> — safe for zero values. Features requiring transformation:</div>
+        </div>
+        <div style="font-family:'IBM Plex Mono',monospace; font-size:10px; background:#f0eeea; border:1px solid #d8d7d0; padding:8px; margin-top:0;">
+          Flow Bytes/s · Flow Packets/s<br>
+          Flow IAT Mean · Flow IAT Std<br>
+          Fwd/Bwd IAT Mean/Std/Max/Min<br>
+          Total Length Fwd/Bwd Packets<br>
+          Total Fwd/Bwd Packets<br>
+          Flow Duration · Packet Length Variance
+        </div>
+        <div class="preproc-row" style="margin-top:8px;">
+          <div class="preproc-icon">S1</div>
+          <div class="preproc-text"><strong>Scale after transform</strong><br>Apply <code>MinMaxScaler</code> fitted <em>only on training split</em> to prevent data leakage. Final pipeline: <code>log1p → MinMaxScaler → model</code>. Persist <code>scaler.pkl</code> for ONNX pipeline.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Section 4: Insights -->
+  <div class="section">
+    <div class="section-label"><span class="section-num">04</span>Noteworthy Insights &amp; Next Steps</div>
+
+    <div class="insight-card">
+      <div class="insight-head">The real minority class problem is BENIGN, not attack types</div>
+      <div class="insight-body">All 18 attack classes together represent 99.8% of data. The model must learn what is <em>not</em> an attack from only 113,828 examples. Standard accuracy metrics will be misleading — a model predicting "attack" for every row achieves 99.8% accuracy. F1-score on the BENIGN class specifically must be the primary evaluation metric alongside macro-F1. FPR target (&lt;0.1%) must be validated exclusively against BENIGN flows.</div>
+    </div>
+
+    <div class="insight-card">
+      <div class="insight-head">Protocol feature is negatively correlated with ACK Flag Count (r = −0.993)</div>
+      <div class="insight-body">UDP-based attacks (TFTP, DrDoS_UDP, DrDoS_DNS, DrDoS_SNMP) have Protocol=17 and generate zero ACK flags by definition. This creates a near-deterministic rule: Protocol=17 + ACK=0 is almost certainly an attack. A tree-based model will discover this instantly, but it also means the model may be implicitly learning protocol-level rules rather than behavioral patterns. Run an ablation with Protocol excluded to measure the behavioral-only F1 impact.</div>
+    </div>
+
+    <div class="insight-card">
+      <div class="insight-head">Total Backward Packets is a discrete 0–6 integer — treat as categorical</div>
+      <div class="insight-body">The histogram shows only values 0–6 across all 70M rows with no continuous distribution. This is not a continuous feature and should not be log-transformed. Encode as an ordinal integer directly. Syn floods are almost exclusively 0 (no server response completes), while reflection attacks show values 1–4. This single feature, combined with Flow Bytes/s, may be sufficient to distinguish Syn floods from all DrDoS variants with high precision.</div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <div class="doc-footer">
+    <span>Pre-Thesis Project · Week 2 Deliverable</span>
+    <span>CIC-DDoS2019 · 70,427,637 rows · Next: Week 3 — Preprocessing Pipeline &amp; Split</span>
+  </div>
+
+</div>
+</body>
+</html>

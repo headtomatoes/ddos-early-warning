@@ -1,0 +1,68 @@
+======================================================================
+  CICIDS2019 -- EDA Summary  (Streaming Edition)
+======================================================================
+
+-- Dataset Overview --------------------------------------------------
+  Source dirs  : ['03-11', '01-12']
+  Files        : 18
+  Total rows   : 70,427,637
+  Columns      : 88
+  Numeric cols : 82
+  Corr sample  : 507,304 rows (stratified per file)
+
+-- Class Distribution ------------------------------------------------
+  TFTP                                          20,082,580  (28.515%)
+  Syn                                            6,473,789  ( 9.192%)
+  MSSQL                                          5,787,453  ( 8.218%)
+  DrDoS_SNMP                                     5,159,870  ( 7.326%)
+  DrDoS_DNS                                      5,071,011  ( 7.200%)
+  DrDoS_MSSQL                                    4,522,492  ( 6.421%)
+  DrDoS_NetBIOS                                  4,093,279  ( 5.812%)
+  UDP                                            3,867,155  ( 5.491%)
+  NetBIOS                                        3,657,497  ( 5.193%)
+  DrDoS_UDP                                      3,134,645  ( 4.451%)
+  DrDoS_SSDP                                     2,610,611  ( 3.707%)
+  DrDoS_LDAP                                     2,179,930  ( 3.095%)
+  LDAP                                           1,915,122  ( 2.719%)
+  DrDoS_NTP                                      1,202,642  ( 1.708%)
+  UDP-lag                                          366,461  ( 0.520%)
+  Portmap                                          186,960  ( 0.265%)
+  BENIGN                                           113,828  ( 0.162%)
+  UDPLag                                             1,873  ( 0.003%)
+  WebDDoS                                              439  ( 0.001%)
+
+  Imbalance ratio (majority:minority) ~ 45746.2 : 1
+
+-- Missing Values (>1% threshold) ------------------------------------
+  Flow Packets/s                                 3.08%
+  Flow Bytes/s                                   3.08%
+
+-- Highly Correlated Pairs (|r| > 0.95) ------------------------------
+  67 redundant pairs detected.
+    r=+1.0000  Total Fwd Packets  <->  Subflow Fwd Packets
+    r=+1.0000  Total Backward Packets  <->  Subflow Bwd Packets
+    r=+1.0000  Total Length of Fwd Packets  <->  Subflow Fwd Bytes
+    r=+1.0000  Total Length of Bwd Packets  <->  Subflow Bwd Bytes
+    r=+1.0000  Fwd Packet Length Mean  <->  Avg Fwd Segment Size
+    r=+1.0000  Bwd Packet Length Mean  <->  Avg Bwd Segment Size
+    r=+1.0000  Flow Packets/s  <->  Fwd Packets/s
+    r=+1.0000  Fwd PSH Flags  <->  RST Flag Count
+    r=+1.0000  Fwd Header Length  <->  Fwd Header Length.1
+    r=+0.9999  Flow Duration  <->  Fwd IAT Total
+
+-- Top-5 Discriminative Features (eta2, Welford streaming) -----------
+  eta2 = between-class / total variance  (higher = more separable)
+  1. Flow Bytes/s                                   eta2=0.6305
+  2. Total Length of Fwd Packets                    eta2=0.3827
+  3. Flow Packets/s                                 eta2=0.2025
+  4. Flow IAT Mean                                  eta2=0.1514
+  5. Flow Duration                                  eta2=0.0812
+
+-- Recommendations ---------------------------------------------------
+  1. Use class-weighted loss or SMOTE to handle imbalance.
+  2. Drop one col from each |r|>0.95 pair before training.
+  3. Log-transform Flow Bytes/s and IAT features (right skew).
+  4. Prioritise top-5 eta2 features as initial feature set.
+  5. Impute or drop NaN rows from inf replacement.
+
+======================================================================

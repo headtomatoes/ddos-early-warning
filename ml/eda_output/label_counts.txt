@@ -1,0 +1,45 @@
+=== Label value_counts() ===
+TFTP             20082580
+Syn               6473789
+MSSQL             5787453
+DrDoS_SNMP        5159870
+DrDoS_DNS         5071011
+DrDoS_MSSQL       4522492
+DrDoS_NetBIOS     4093279
+UDP               3867155
+NetBIOS           3657497
+DrDoS_UDP         3134645
+DrDoS_SSDP        2610611
+DrDoS_LDAP        2179930
+LDAP              1915122
+DrDoS_NTP         1202642
+UDP-lag            366461
+Portmap            186960
+BENIGN             113828
+UDPLag               1873
+WebDDoS               439
+
+=== Percentage breakdown ===
+  TFTP                                          20,082,580  (28.515%)
+  Syn                                            6,473,789  ( 9.192%)
+  MSSQL                                          5,787,453  ( 8.218%)
+  DrDoS_SNMP                                     5,159,870  ( 7.326%)
+  DrDoS_DNS                                      5,071,011  ( 7.200%)
+  DrDoS_MSSQL                                    4,522,492  ( 6.421%)
+  DrDoS_NetBIOS                                  4,093,279  ( 5.812%)
+  UDP                                            3,867,155  ( 5.491%)
+  NetBIOS                                        3,657,497  ( 5.193%)
+  DrDoS_UDP                                      3,134,645  ( 4.451%)
+  DrDoS_SSDP                                     2,610,611  ( 3.707%)
+  DrDoS_LDAP                                     2,179,930  ( 3.095%)
+  LDAP                                           1,915,122  ( 2.719%)
+  DrDoS_NTP                                      1,202,642  ( 1.708%)
+  UDP-lag                                          366,461  ( 0.520%)
+  Portmap                                          186,960  ( 0.265%)
+  BENIGN                                           113,828  ( 0.162%)
+  UDPLag                                             1,873  ( 0.003%)
+  WebDDoS                                              439  ( 0.001%)
+
+Imbalance ratio (majority:minority) = 45746.2:1
+  Majority : TFTP  (20,082,580)
+  Minority : WebDDoS  (439)

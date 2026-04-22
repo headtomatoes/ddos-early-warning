@@ -1,82 +1,117 @@
 ══════════════════════════════════════════════════════════
 STAGE: W3_PREPROCESS
 ══════════════════════════════════════════════════════════
-timestamp_start   : 2026-04-12T17:59:02Z
-timestamp_end     : 2026-04-12T18:02:48Z
+timestamp_start   : 2026-04-21T18:48:34Z
+timestamp_end     : 2026-04-21T19:02:00Z
 python_version    : 3.13.7
 host_machine      : DESKTOP-J9V6T4O
 source_files      : 18 CSV files
 total_rows_raw    : 70427637
-features_selected : [Flow Bytes/s, Total Length of Fwd Packets, Flow Packets/s, Flow IAT Mean, Flow Duration, Total Backward Packets, SYN Flag Count, ACK Flag Count, Label]
+features_selected : [Flow Bytes/s, Total Length of Fwd Packets, Flow Packets/s, Flow IAT Mean, Flow Duration, Total Backward Packets, SYN Flag Count, ACK Flag Count, Protocol, Destination Port, Flow IAT Std, Flow IAT Max, Total Fwd Packets, Total Length of Bwd Packets, Down/Up Ratio, Packet Length Std, Packet Length Variance, Average Packet Size, Bwd Packet Length Std, Fwd Packet Length Std, RST Flag Count, PSH Flag Count, URG Flag Count, Init_Win_bytes_forward, Init_Win_bytes_backward, Active Std, Idle Std, Active Mean, Idle Mean, Inbound, Subflow Fwd Packets, Subflow Bwd Packets, Bwd Packets/s, Fwd Packets/s, Label]
+safe_exclusions   : [Source IP, Destination IP, Flow ID, Timestamp, Unnamed: 0, SimillarHTTP, Fwd Header Length.1]
 rows_after_drop   : 70427637
 null_imputed_cols : Flow Bytes/s=2170750, Flow Packets/s=2170750
-impute_strategy   : per_class_median (fitted on train only)
-train_rows        : 49299345  BENIGN: 79680
-val_rows          : 10564146  BENIGN: 17074
-test_rows         : 10564146  BENIGN: 17074
-scale_pos_weight  : 617.72
+impute_strategy   : train_global_median (fitted on train only; label-agnostic)
+train_rows        : 49300546  BENIGN: 79608
+val_rows          : 10563698  BENIGN: 17184
+test_rows         : 10563393  BENIGN: 17036
+scale_pos_weight  : 618.29
 transforms_applied: None (Deferred to Pipeline in W4/W5)
 artifacts_saved   :
-  label_encoder.pkl      sha256: 455af8da1f829d49ea40d3a8c1b4ad03286678ba85a9ebe9821cf7dc907b3c0f
-  class_medians.pkl      sha256: c80ce60349a172a39c3c22a7895abd69f1c6140ff50ab216a48c692dc06677d4
-  train_processed.parquet sha256: b0b2d19a6c2aa4b8d6a62d4c3a49aa27bb685ff38a1e0e756bcf191f24d3042b
-  val_processed.parquet  sha256: e8ed4bd3b6d10f862b62118215e771aedc2694c77766e985531383bff9397daa
-  test_holdout_processed.parquet sha256: 421bc4ef08c1d2db0ca703b9a155094267cad24fda4a020d85386ae786d500d7
+  label_encoder.pkl      sha256: 7b9a29185783942138e2449a8c5623d169e32f5c40df12b4ead9e31d724bb2c1
+  class_medians.pkl      sha256: c87b02803426470139c984f6ae6223aac3cfbdec41f50f431d1037a1f53ecc7f
+  train_processed.parquet sha256: df56e3ee06d74b2cf7ffb4d335ad1b399ea6da11cb52391681efa8e58a5bb6e1
+  val_processed.parquet  sha256: 661c33b15bb68d46968bbfa7bb5ac197cb35bffa56126bebf3e43276dc502fa3
+  test_holdout_processed.parquet sha256: 3aa677409e70d27f50e15ae6c852e7b63f2fb9b0f999a3a71f6d1bc31ebadfbc
 STATUS: SUCCESS
 
 
 ══════════════════════════════════════════════════════════
 STAGE: W4_TRAIN (baseline)
 ══════════════════════════════════════════════════════════
-timestamp         : 2026-04-12T19:10:24Z
-config_applied    : max_depth=4, n_estimators=100, weight_clip=None
-macro_f1          : 0.4756
-benign_f1         : 0.8895
-fpr               : 0.914% (156 false alarms)
-STATUS: SUCCESS — new best checkpoint
+timestamp         : 2026-04-21T21:39:05Z
+config_applied    : max_depth=4, n_estimators=100, learning_rate=0.05, weight_clip=50.0, min_child_weight=20, gamma=2.0, reg_lambda=10.0, subsample=0.8, colsample_bytree=0.8, max_delta_step=1, benign_weight_boost=2.0
+fpr_gate_target    : <= 0.100%
+fpr_gate_pass      : True
+macro_f1          : 0.4722
+benign_f1         : 0.9516
+fpr               : 0.047% (8 false alarms)
+benign_p0_pct     : 0.000% (0 samples)
+STATUS: SUCCESS - new best checkpoint
 ══════════════════════════════════════════════════════════
 STAGE: W5_OPTIMIZE (optimize)
 ══════════════════════════════════════════════════════════
-timestamp         : 2026-04-12T20:59:49Z
-config_applied    : max_depth=6, n_estimators=150, weight_clip=None
-macro_f1          : 0.0540
-benign_f1         : 0.0000
-fpr               : 100.000% (17074 false alarms)
-STATUS: FAILED — BENIGN-F1 regressed. Reverted to previous checkpoint.
+timestamp         : 2026-04-22T02:32:53Z
+config_applied    : max_depth=5, n_estimators=150, learning_rate=0.05, weight_clip=50.0, min_child_weight=20, gamma=2.0, reg_lambda=10.0, subsample=0.8, colsample_bytree=0.8, max_delta_step=1, benign_weight_boost=2.0
+fpr_gate_target    : <= 0.100%
+fpr_gate_pass      : True
+macro_f1          : 0.4761
+benign_f1         : 0.9845
+fpr               : 0.041% (7 false alarms)
+benign_p0_pct     : 0.000% (0 samples)
+STATUS: SUCCESS - new best checkpoint
 ══════════════════════════════════════════════════════════
 STAGE: W5_TUNE (tune)
 ══════════════════════════════════════════════════════════
-timestamp         : 2026-04-12T22:11:30Z
-config_applied    : max_depth=5, n_estimators=100, weight_clip=100.0
-macro_f1          : 0.4809
-benign_f1         : 0.9204
-fpr               : 0.914% (156 false alarms)
-STATUS: SUCCESS — new best checkpoint
+timestamp         : 2026-04-22T05:18:53Z
+config_applied    : max_depth=5, n_estimators=100, learning_rate=0.03, weight_clip=50.0, min_child_weight=20, gamma=2.0, reg_lambda=10.0, subsample=0.8, colsample_bytree=0.8, max_delta_step=1, benign_weight_boost=2.0
+fpr_gate_target    : <= 0.100%
+fpr_gate_pass      : True
+macro_f1          : 0.4737
+benign_f1         : 0.9491
+fpr               : 0.035% (6 false alarms)
+benign_p0_pct     : 0.000% (0 samples)
+STATUS: FAILED - BENIGN-F1 regressed. Reverted to previous checkpoint.
 ══════════════════════════════════════════════════════════
 STAGE: PIPELINE_EXPORT
 ══════════════════════════════════════════════════════════
-timestamp         : 2026-04-12T23:24:07Z
-best_config       : tune
-model_size_kb     : 3705.4
+timestamp         : 2026-04-22T05:21:52Z
+best_config       : optimize
+model_size_kb     : 5743.8
 artifacts_saved   : pipeline_checkpoint.pkl
-STATUS: SUCCESS — PIPELINE READY FOR EXPORT
+checkpoint_macro_f1: 0.4761
+checkpoint_benign_f1: 0.9845
+checkpoint_fpr    : 0.041% (7 false alarms)
+checkpoint_benign_p0_pct: 0.000% (0 samples)
+STATUS: SUCCESS - PIPELINE READY FOR EXPORT
 
 ══════════════════════════════════════════════════════════
 STAGE: W5_THRESHOLD
 ══════════════════════════════════════════════════════════
-timestamp         : 2026-04-12T23:24:12Z
+timestamp         : 2026-04-22T05:22:03Z
 model_loaded      : pipeline_checkpoint.pkl
+benign_prob_col   : 0
+argmax_fpr        : 0.041% (7 false alarms)
+benign_p0_floor   : 0.000% (0 samples)
+target_max_fpr    : 0.100%
+target_max_missed : 1.000%
 threshold_sweep   :
-  0.001: FPR=19.345%  missed=179104
-  0.005: FPR=19.351%  missed=101190
-  0.010: FPR=19.351%  missed=87858
-  0.020: FPR=19.386%  missed=81755
-  0.050: FPR=19.533%  missed=79184
-  0.100: FPR=19.708%  missed=73943
-  0.200: FPR=20.183%  missed=67660
-  0.300: FPR=20.405%  missed=24746
-  0.400: FPR=21.284%  missed=24418
-  0.500: FPR=21.348%  missed=24211
-recommended_thresh: 0.001
+  0.000001: FPR=0.000%  missed=10546514 (100.000%)
+  0.000005: FPR=0.000%  missed=10546514 (100.000%)
+  0.000010: FPR=0.000%  missed=10546514 (100.000%)
+  0.000050: FPR=0.000%  missed=10546514 (100.000%)
+  0.000100: FPR=0.000%  missed=10546514 (100.000%)
+  0.000500: FPR=0.000%  missed=6672639 (63.269%)
+  0.001000: FPR=0.000%  missed=6596759 (62.549%)
+  0.005000: FPR=0.000%  missed=28359 (0.269%)
+  0.010000: FPR=0.006%  missed=13341 (0.126%)
+  0.020000: FPR=0.006%  missed=8516 (0.081%)
+  0.050000: FPR=0.035%  missed=3521 (0.033%)
+  0.100000: FPR=0.035%  missed=1305 (0.012%)
+  0.200000: FPR=0.041%  missed=651 (0.006%)
+  0.300000: FPR=0.041%  missed=467 (0.004%)
+  0.400000: FPR=0.041%  missed=220 (0.002%)
+  0.500000: FPR=0.041%  missed=192 (0.002%)
+recommended_thresh: 0.5
 artifacts_saved   : deploy_config.json, threshold_analysis.json
-STATUS: FAILED — FPR target not met. Escalate to retraining with expanded feature set.
+STATUS: SUCCESS - Target met.
+
+══════════════════════════════════════════════════════════
+STAGE: W6_ONNX_EXPORT
+══════════════════════════════════════════════════════════
+timestamp         : 2026-04-22T12:26:36Z
+input_pkl         : pipeline_checkpoint.pkl
+output_onnx       : xgboost_final.onnx
+verification      : 500/500 validation rows matched safely (decimal=4)
+deploy_config     : Updated model_path to xgboost_final.onnx
+STATUS: SUCCESS — PIPELINE READY FOR PRODUCTION

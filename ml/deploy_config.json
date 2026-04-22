@@ -1,8 +1,15 @@
 {
   "model_path": "xgboost_final.onnx",
-  "threshold": 0.001,
-  "achieved_fpr_pct": 19.345203232985828,
-  "achieved_missed_attacks": 179104,
-  "target_met": false,
-  "generated_at": "2026-04-12T23:24:12Z"
+  "threshold": 0.5,
+  "achieved_fpr_pct": 0.04073556797020484,
+  "achieved_missed_attacks": 192,
+  "achieved_missed_rate_pct": 0.0018205067570194284,
+  "target_max_fpr_pct": 0.1,
+  "target_max_missed_rate_pct": 1.0,
+  "target_met": true,
+  "argmax_fpr_pct": 0.04073556797020484,
+  "benign_prob_zero_count": 0,
+  "benign_prob_zero_pct": 0.0,
+  "failure_reason": "",
+  "generated_at": "2026-04-22T05:22:03Z"
 }

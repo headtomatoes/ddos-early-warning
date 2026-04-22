@@ -1,52 +1,98 @@
 [
   {
+    "threshold": 1e-06,
+    "fpr": 0.0,
+    "missed": 10546514,
+    "missed_rate_pct": 100.0
+  },
+  {
+    "threshold": 5e-06,
+    "fpr": 0.0,
+    "missed": 10546514,
+    "missed_rate_pct": 100.0
+  },
+  {
+    "threshold": 1e-05,
+    "fpr": 0.0,
+    "missed": 10546514,
+    "missed_rate_pct": 100.0
+  },
+  {
+    "threshold": 5e-05,
+    "fpr": 0.0,
+    "missed": 10546514,
+    "missed_rate_pct": 100.0
+  },
+  {
+    "threshold": 0.0001,
+    "fpr": 0.0,
+    "missed": 10546514,
+    "missed_rate_pct": 100.0
+  },
+  {
+    "threshold": 0.0005,
+    "fpr": 0.0,
+    "missed": 6672639,
+    "missed_rate_pct": 63.26866868047585
+  },
+  {
     "threshold": 0.001,
-    "fpr": 19.345203232985828,
-    "missed": 179104
+    "fpr": 0.0,
+    "missed": 6596759,
+    "missed_rate_pct": 62.54918923921212
   },
   {
     "threshold": 0.005,
-    "fpr": 19.35106009136699,
-    "missed": 101190
+    "fpr": 0.0,
+    "missed": 28359,
+    "missed_rate_pct": 0.26889453709538524
   },
   {
     "threshold": 0.01,
-    "fpr": 19.35106009136699,
-    "missed": 87858
+    "fpr": 0.005819366852886406,
+    "missed": 13341,
+    "missed_rate_pct": 0.12649677419477184
   },
   {
     "threshold": 0.02,
-    "fpr": 19.38620124165398,
-    "missed": 81755
+    "fpr": 0.005819366852886406,
+    "missed": 8516,
+    "missed_rate_pct": 0.08074706011863257
   },
   {
     "threshold": 0.05,
-    "fpr": 19.532622701183087,
-    "missed": 79184
+    "fpr": 0.034916201117318434,
+    "missed": 3521,
+    "missed_rate_pct": 0.033385439018048996
   },
   {
     "threshold": 0.1,
-    "fpr": 19.708328452618016,
-    "missed": 73943
+    "fpr": 0.034916201117318434,
+    "missed": 1305,
+    "missed_rate_pct": 0.012373756864116427
   },
   {
     "threshold": 0.2,
-    "fpr": 20.182733981492326,
-    "missed": 67660
+    "fpr": 0.04073556797020484,
+    "missed": 651,
+    "missed_rate_pct": 0.006172655723019
   },
   {
     "threshold": 0.3,
-    "fpr": 20.40529459997657,
-    "missed": 24746
+    "fpr": 0.04073556797020484,
+    "missed": 467,
+    "missed_rate_pct": 0.004428003414208714
   },
   {
     "threshold": 0.4,
-    "fpr": 21.283823357151224,
-    "missed": 24418
+    "fpr": 0.04073556797020484,
+    "missed": 220,
+    "missed_rate_pct": 0.0020859973257514285
   },
   {
     "threshold": 0.5,
-    "fpr": 21.348248799344034,
-    "missed": 24211
+    "fpr": 0.04073556797020484,
+    "missed": 192,
+    "missed_rate_pct": 0.0018205067570194284
   }
 ]

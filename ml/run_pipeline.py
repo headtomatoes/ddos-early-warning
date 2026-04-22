@@ -26,7 +26,7 @@ def main():
         "w3_preprocess.py",
         "w5_train_final.py",
         "w5_threshold.py",
-        "w6_onnx_export.py"  # Added the final ONNX export stage
+        "w6_onnx_export.py"
     ]
     
     for script in pipeline:

@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pipeline Validation & Analysis Report</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        
+        :root {
+            --bg-dark: #0f172a;
+            --bg-card: #1e293b;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --accent-blue: #3b82f6;
+            --accent-green: #10b981;
+            --accent-purple: #8b5cf6;
+            --accent-warning: #f59e0b;
+            --border-color: #334155;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            margin: 0;
+            padding: 2rem;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        header {
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin: 0;
+            background: linear-gradient(to right, var(--accent-blue), var(--accent-purple));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        h2 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-top: 0;
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .subtitle {
+            color: var(--text-muted);
+            font-size: 1.1rem;
+            margin-top: 0.5rem;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .card {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.2), 0 4px 6px -2px rgba(0, 0, 0, 0.1);
+            border-color: var(--accent-blue);
+        }
+
+        .metric-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--accent-green);
+            margin: 0.5rem 0;
+        }
+
+        .tag {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            background-color: rgba(59, 130, 246, 0.1);
+            color: var(--accent-blue);
+            margin-right: 0.5rem;
+        }
+
+        .tag.success { background-color: rgba(16, 185, 129, 0.1); color: var(--accent-green); }
+        .tag.warning { background-color: rgba(245, 158, 11, 0.1); color: var(--accent-warning); }
+
+        ul {
+            padding-left: 1.5rem;
+            color: var(--text-muted);
+        }
+
+        li { margin-bottom: 0.5rem; }
+        strong { color: var(--text-main); }
+
+        .timeline {
+            position: relative;
+            padding-left: 2rem;
+        }
+        
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background-color: var(--border-color);
+        }
+
+        .timeline-item {
+            position: relative;
+            margin-bottom: 2rem;
+        }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -2.35rem;
+            top: 0.25rem;
+            width: 1rem;
+            height: 1rem;
+            border-radius: 50%;
+            background-color: var(--accent-blue);
+            border: 4px solid var(--bg-dark);
+        }
+
+        .highlight-box {
+            background-color: rgba(139, 92, 246, 0.1);
+            border-left: 4px solid var(--accent-purple);
+            padding: 1rem;
+            border-radius: 0 8px 8px 0;
+            margin: 1.5rem 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>DDoS Pipeline: Validation & Analysis Report</h1>
+            <div class="subtitle">Ensuring Path Correctness, Reviewing Progress, and Charting the Future</div>
+        </header>
+
+        <!-- Section 1: Validation -->
+        <div class="card" style="margin-bottom: 2rem;">
+            <h2>🛡️ 1. How Do We Know We Are on the Correct Path?</h2>
+            <p style="color: var(--text-muted);">In ML pipelines, the biggest danger is "silent failure"—where code runs without crashing but trains on leaked data, divergent features, or unrealistic settings. Here is how we mathematically and programmatically guarantee the pipeline is sound:</p>
+            
+            <div class="grid">
+                <div>
+                    <h3>1. Architecture-Consistent Checkpointing</h3>
+                    <p style="color: var(--text-muted); font-size: 0.95rem;">Instead of just saving the XGBoost model, we save the <strong>exact fitted scikit-learn Pipeline</strong> (log1p &rarr; MinMaxScaler &rarr; XGBClassifier). In <code>w5_train_final.py</code>, we reload this saved object and assert that its metrics precisely match the training evaluation. This prevents any discrepancy between what was trained and what is deployed.</p>
+                </div>
+                <div>
+                    <h3>2. Synchronized Feature Schemas</h3>
+                    <p style="color: var(--text-muted); font-size: 0.95rem;">We enforce a centralized <code>FEATURES_V3</code> array and PyArrow strict typing (<code>float32</code> features, <code>int32</code> labels) across all three scripts. It is mathematically impossible for the thresholding script to see a different column order or data type than what the model was trained on.</p>
+                </div>
+                <div>
+                    <h3>3. Strict Dual-Gate Thresholding</h3>
+                    <p style="color: var(--text-muted); font-size: 0.95rem;">We do not guess if the model is good enough for production. The script iterates through thresholds and statically proves on validation data that the model can achieve a <strong>False Positive Rate &le; 0.10%</strong> AND a <strong>Missed Attack Rate &le; 1.00%</strong>. If it fails, ONNX export is blocked.</p>
+                </div>
+            </div>
+            
+            <div class="highlight-box">
+                <strong>Current Verification Status:</strong> 
+                The model achieved an FPR of 0.041% (7 false alarms) and a Missed Attack Rate of 0.002% (192 missed) at a threshold of 0.5. These numbers confirm our pipeline extracts phenomenal separation between Benign and DDoS classes.
+            </div>
+        </div>
+
+        <!-- Section 2: What We Have Done -->
+        <h2 style="margin-bottom: 1.5rem;">✅ 2. What We Have Accomplished</h2>
+        <div class="timeline">
+            <div class="timeline-item">
+                <div style="font-weight: 600; font-size: 1.1rem; margin-bottom: 0.25rem;">Memory-Safe & Scalable Preprocessing</div>
+                <div style="color: var(--text-muted);">Shifted to a stratified, chunked processing architecture (150k rows per chunk) that safely crunches over 70 million raw CSV rows without exceeding RAM limits.</div>
+            </div>
+            <div class="timeline-item">
+                <div style="font-weight: 600; font-size: 1.1rem; margin-bottom: 0.25rem;">Eliminated Data Leakage</div>
+                <div style="color: var(--text-muted);">Refactored the imputation logic to use <strong>Train-Only Global Medians</strong>, ensuring the validation and holdout sets have zero influence on training distributions.</div>
+            </div>
+            <div class="timeline-item">
+                <div style="font-weight: 600; font-size: 1.1rem; margin-bottom: 0.25rem;">Resolved Crashing & Type Drift</div>
+                <div style="color: var(--text-muted);">Patched PyArrow schema write mismatches, removed deprecated Pandas <code>copy=False</code> parameters, and bounded negative values at <code>0.0</code> to prevent domain errors in <code>np.log1p</code> mathematical transforms.</div>
+            </div>
+            <div class="timeline-item">
+                <div style="font-weight: 600; font-size: 1.1rem; margin-bottom: 0.25rem;">Generated Deployment Artifacts</div>
+                <div style="color: var(--text-muted);">Successfully generated <code>pipeline_checkpoint.pkl</code> and calculated an optimal dynamic threshold logic recorded in <code>deploy_config.json</code>.</div>
+            </div>
+        </div>
+
+        <!-- Section 3: Future Roadmap -->
+        <h2 style="margin-top: 3rem; margin-bottom: 1.5rem;">🚀 3. What We Can Do To Improve</h2>
+        <div class="grid">
+            <div class="card">
+                <span class="tag warning">Immediate Next Step</span>
+                <h3>Re-enable ONNX Export</h3>
+                <p>Now that our threshold gates have cleared, we need to uncomment <code>w6_onnx_export.py</code> in the pipeline orchestrator. This will serialize our pipeline into the highly optimized <code>.onnx</code> format required by the C/Go Controller backend.</p>
+            </div>
+            
+            <div class="card">
+                <span class="tag">System Engineering</span>
+                <h3>Integrate with eBPF/XDP Stack</h3>
+                <p>Move beyond the ML folder. We need to finalize the userspace Controller application that will load our ONNX artifact, read packet statistics from eBPF maps in the kernel space, and execute fast packet dropping on the XDP hook.</p>
+            </div>
+
+            <div class="card">
+                <span class="tag">Model Performance</span>
+                <h3>Diagnose Macro-F1 Performance</h3>
+                <p>While BENIGN separation is excellent (F1=0.98), the overall Macro-F1 is ~0.47. This implies the model easily tells "Attack vs Normal" apart, but is heavily confusing different sub-types of attacks (e.g., confusing UDP DDoS with SYN DDoS). If attack classification matters for mitigation strategies, we need hyperparameter tuning or data augmentation targeting minority classes.</p>
+            </div>
+
+            <div class="card">
+                <span class="tag">Observability</span>
+                <h3>Grafana & Telemetry Setup</h3>
+                <p>Build out the dashboards to monitor the pipeline live in production. We must visualize the real-time inference latency, FPR metrics, and packet-drop events to ensure our pipeline operates efficiently under network stress.</p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

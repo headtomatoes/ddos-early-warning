@@ -1,0 +1,682 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Phase 3 Master Guide</title>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+    <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+    
+    :root {
+        --bg-dark: #0f172a;
+        --bg-card: #1e293b;
+        --bg-code: #0b1120;
+        --text-main: #f8fafc;
+        --text-muted: #94a3b8;
+        --accent-blue: #3b82f6;
+        --accent-green: #10b981;
+        --accent-purple: #8b5cf6;
+        --accent-warning: #f59e0b;
+        --accent-danger: #ef4444;
+        --border-color: #334155;
+    }
+
+    body {
+        font-family: 'Inter', sans-serif;
+        background-color: var(--bg-dark);
+        color: var(--text-main);
+        margin: 0;
+        padding: 0;
+        line-height: 1.6;
+    }
+
+    .navbar {
+        position: sticky;
+        top: 0;
+        background-color: rgba(15, 23, 42, 0.95);
+        backdrop-filter: blur(10px);
+        padding: 1rem 2rem;
+        border-bottom: 1px solid var(--border-color);
+        display: flex;
+        gap: 1rem;
+        z-index: 1000;
+        overflow-x: auto;
+    }
+
+    .nav-btn {
+        background: transparent;
+        color: var(--text-muted);
+        border: 1px solid transparent;
+        padding: 0.5rem 1rem;
+        border-radius: 6px;
+        cursor: pointer;
+        font-family: 'Inter', sans-serif;
+        font-weight: 500;
+        transition: all 0.2s;
+        white-space: nowrap;
+    }
+
+    .nav-btn:hover {
+        color: var(--text-main);
+        background: rgba(255, 255, 255, 0.05);
+    }
+
+    .nav-btn.active {
+        color: var(--accent-blue);
+        background: rgba(59, 130, 246, 0.1);
+        border-color: rgba(59, 130, 246, 0.2);
+    }
+
+    .container {
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: 2rem;
+    }
+
+    .section-content {
+        display: none;
+        animation: fadeIn 0.3s ease-in-out;
+    }
+
+    .section-content.active {
+        display: block;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Common elements */
+    h1 { font-size: 2.5rem; background: linear-gradient(to right, var(--accent-blue), var(--accent-green)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-top: 0; }
+    h2 { border-bottom: 1px solid var(--border-color); padding-bottom: 0.5rem; font-size: 1.75rem; display: flex; align-items: center; gap: 0.75rem; margin-top: 2rem; color: var(--text-main); }
+    h3 { color: #cbd5e1; margin-top: 1.5rem; }
+    
+    p, li { color: var(--text-muted); font-size: 1.05rem; }
+    ul, ol { margin-bottom: 1.5rem; }
+    li { margin-bottom: 0.5rem; }
+
+    /* Callouts */
+    .callout { padding: 1.25rem; border-radius: 8px; margin: 1.5rem 0; border-left: 4px solid; background-color: rgba(255,255,255,0.03); }
+    .callout.info { border-left-color: var(--accent-blue); }
+    .callout.warning { border-left-color: var(--accent-warning); }
+    .callout.danger { border-left-color: var(--accent-danger); }
+    .callout.success { border-left-color: var(--accent-green); }
+    .callout-title { font-weight: 600; color: var(--text-main); margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.5rem; }
+
+    /* Code blocks */
+    pre { background-color: var(--bg-code); padding: 1.25rem; border-radius: 8px; border: 1px solid var(--border-color); overflow-x: auto; margin: 1.5rem 0; }
+    code { font-family: 'JetBrains Mono', monospace; font-size: 0.9rem; color: #a6e22e; }
+    p code, li code { background-color: var(--bg-code); padding: 0.2rem 0.4rem; border-radius: 4px; border: 1px solid var(--border-color); color: var(--accent-blue); }
+    .comment { color: #75715e; font-style: italic; }
+    .keyword { color: #c678dd; }
+    .type { color: #e5c07b; }
+
+    /* Badges & Grids */
+    .step-badge { background-color: var(--accent-blue); color: white; border-radius: 50%; width: 32px; height: 32px; display: inline-flex; align-items: center; justify-content: center; font-size: 1.25rem; font-weight: 700; }
+    .architecture-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin: 2rem 0; }
+    .arch-box { background-color: var(--bg-card); border: 1px solid var(--border-color); border-radius: 8px; padding: 1.5rem; }
+    .arch-title { font-weight: 700; margin-bottom: 1rem; color: var(--text-main); border-bottom: 1px dashed var(--border-color); padding-bottom: 0.5rem; }
+
+    /* Diagrams */
+    .diagram-box { background-color: var(--bg-card); border: 1px solid var(--border-color); border-radius: 12px; padding: 2rem; margin-bottom: 3rem; text-align: center; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); }
+    .diagram-title { font-weight: 700; font-size: 1.25rem; margin-bottom: 1.5rem; text-align: left; border-bottom: 1px solid var(--border-color); padding-bottom: 0.5rem; }
+
+    /* Checklist */
+    .task-group { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 8px; margin-bottom: 1.5rem; padding: 1.5rem; }
+    .task-group h2 { margin-top: 0; color: var(--accent-blue); font-size: 1.2rem; border-bottom: none; }
+    .task { display: flex; align-items: flex-start; gap: 1rem; margin-bottom: 1rem; padding-bottom: 1rem; border-bottom: 1px dashed var(--border-color); }
+    .task:last-child { margin-bottom: 0; padding-bottom: 0; border-bottom: none; }
+    input[type="checkbox"] { width: 20px; height: 20px; margin-top: 2px; accent-color: var(--accent-blue); cursor: pointer; }
+    label { cursor: pointer; font-size: 1rem; color: #cbd5e1; }
+    .done { text-decoration: line-through; color: #64748b; }
+    .progress-bar { height: 8px; background: var(--border-color); border-radius: 4px; overflow: hidden; margin-bottom: 2rem; }
+    .progress-fill { height: 100%; background: var(--accent-blue); width: 0%; transition: width 0.3s; }
+
+    /* Notes */
+    .note { background: var(--bg-card); border-left: 4px solid var(--accent-purple); padding: 1.5rem; margin-bottom: 1.5rem; border-radius: 4px; }
+    .note h2 { margin-top: 0; border-bottom: none; padding-bottom: 0; color: var(--text-main); font-size: 1.5rem; }
+    strong { color: var(--text-main); }
+</style>
+    <script>mermaid.initialize({ startOnLoad: true, theme: 'dark' });</script>
+</head>
+<body>
+    <div class="navbar" id="navbar"></div>
+    <div class="container" id="content-container"></div>
+    
+    <script>
+        const sections = [];
+
+        sections.push({
+            id: 'section-0',
+            title: 'Architecture Visualization',
+            html: `
+<div class="container">
+<h1>Phase 3: System Visualization</h1>
+<p>Interactive architecture and data flow diagrams for the eBPF/Go DDoS mitigation pipeline.</p>
+<div class="diagram-box">
+<div class="diagram-title">System Architecture Topology</div>
+<div class="mermaid">
+                graph TD
+                subgraph "Kernel Space (eBPF/XDP)"
+                    NIC[Network Interface Card] --&gt;|Raw Packets| XDP[XDP Program: xdp_prog.c]
+                    XDP --&gt;|Pass| OS[Linux Networking Stack]
+                    XDP --&gt;|Drop| DROP[Packet Dropped]
+                    XDP -.-&gt;|Update Counters| MAP_FLOW[(LRU Hash Map: flow_stats)]
+                    XDP -.-&gt;|Check IP| MAP_DROP[(Hash Map: blacklist)]
+                end
+
+                subgraph "User Space (Go Controller)"
+                    GO[Go Daemon: main.go] -.-&gt;|Read| MAP_FLOW
+                    GO -.-&gt;|Write| MAP_DROP
+                    GO --&gt;|Convert to Features| PREPROC[Feature Assembly]
+                    PREPROC --&gt;|Float32 Array| ONNX[ONNX Runtime: xgboost_final.onnx]
+                    ONNX --&gt;|Attack Score &gt; 0.5| GO
+                end
+            </div>
+</div>
+<div class="diagram-box">
+<div class="diagram-title">XDP Per-Packet Execution Logic</div>
+<div class="mermaid">
+                flowchart TD
+                START(Incoming Packet) --&gt; PARSE_ETH{Valid Ethernet?}
+                PARSE_ETH -- No --&gt; PASS(XDP_PASS)
+                PARSE_ETH -- Yes --&gt; PARSE_IP{Valid IPv4?}
+                PARSE_IP -- No --&gt; PASS
+                PARSE_IP -- Yes --&gt; CHECK_DROP{IP in Drop Map?}
+                
+                CHECK_DROP -- Yes --&gt; DROP(XDP_DROP)
+                CHECK_DROP -- No --&gt; LOOKUP_FLOW{Flow Exists?}
+                
+                LOOKUP_FLOW -- Yes --&gt; UPDATE_STATS[Update: Packets++, Bytes+=len, IAT]
+                LOOKUP_FLOW -- No --&gt; NEW_STATS[Init: first_seen_ns, pkts=1, bytes=len]
+                
+                UPDATE_STATS --&gt; PASS
+                NEW_STATS --&gt; PASS
+            </div>
+</div>
+</div>
+`,
+            script: ``
+        });
+        
+        sections.push({
+            id: 'section-1',
+            title: 'eBPF & Controller Execution Guide',
+            html: `
+<div class="container">
+<h1>Phase 3: XDP &amp; Controller Implementation Guide</h1>
+<p>This guide provides a comprehensive, step-by-step roadmap for migrating the Machine Learning pipeline built on your Windows environment to the real-time Linux XDP environment.</p>
+<div class="callout warning">
+<div class="callout-title">⚠️ Cross-Platform Architecture Context</div>
+<p style="margin:0;">The ML model was trained on <strong>Windows</strong>, but eBPF/XDP requires a <strong>Linux</strong> kernel (preferably v5.15+). Your system architecture is split: Windows acts as the AI Training Lab, while Linux acts as the Production Firewall.</p>
+</div>
+<div class="architecture-grid">
+<div class="arch-box">
+<div class="arch-title">🪟 Windows (Training Environment)</div>
+<ul>
+<li>Parses raw PCAP/CSV datasets</li>
+<li>Trains XGBoost &amp; outputs ONNX</li>
+<li>Generates <code>xgboost_final.onnx</code></li>
+<li>Generates <code>deploy_config.json</code></li>
+</ul>
+</div>
+<div class="arch-box">
+<div class="arch-title">🐧 Linux (Deployment Environment)</div>
+<ul>
+<li>Runs the compiled <code>xdp_prog.o</code> in Kernel Space</li>
+<li>Runs the Go Controller in User Space</li>
+<li>Loads the ONNX model via ONNX Runtime</li>
+<li>Executes real-time packet dropping</li>
+</ul>
+</div>
+</div>
+<!-- STEP 1 -->
+<h2><span class="step-badge">1</span> Transfer &amp; Setup the Linux Environment</h2>
+<p>Before writing code, we must prepare the Linux VM to accept the Windows artifacts and compile eBPF code.</p>
+<h3>1.1 Install Prerequisites on Linux</h3>
+<p>Open your Linux terminal and install the eBPF/Clang toolchain and Go:</p>
+<pre><code>sudo apt update
+sudo apt install -y clang llvm libbpf-dev linux-headers-$(uname -r) bpfcc-tools bpftool
+sudo apt install -y golang-go</code></pre>
+<h3>1.2 Transfer ML Artifacts</h3>
+<p>Copy the output files from your Windows <code>/ml</code> folder to the Linux <code>/controller</code> folder using SCP, SFTP, or a shared folder. You strictly need:</p>
+<ul>
+<li><code>xgboost_final.onnx</code></li>
+<li><code>deploy_config.json</code></li>
+</ul>
+<!-- STEP 2 -->
+<h2><span class="step-badge">2</span> Write the XDP C Program (Kernel Space)</h2>
+<p>The XDP program must parse packets at the network card level, accumulate statistics into a struct, and check a blacklist.</p>
+<div class="callout info">
+<div class="callout-title">🧠 Design Philosophy: Keep eBPF Dumb, Keep Go Smart</div>
+<p style="margin:0;">eBPF is highly restricted. Do <strong>not</strong> attempt floating-point math, divisions, or per-second rate calculations in C. The C code should only accumulate raw integers (Bytes, Packets, Nanoseconds). The Go Controller will do the complex math to match the 34 features expected by ONNX.</p>
+</div>
+<h3>2.1 Define the eBPF Maps</h3>
+<p>Create a file named <code>xdp/xdp_prog.c</code>. We need two maps: one for tracking flows, and one for blacklisting IPs.</p>
+<pre><code>#include &lt;linux/bpf.h&gt;
+#include &lt;bpf/bpf_helpers.h&gt;
+#include &lt;linux/if_ether.h&gt;
+#include &lt;linux/ip.h&gt;
+#include &lt;linux/tcp.h&gt;
+
+// The raw counters we accumulate for every IP
+struct flow_stats {
+    __u64 first_seen_ns;
+    __u64 last_seen_ns;
+    __u64 fwd_packet_count;
+    __u64 bwd_packet_count;
+    __u64 fwd_byte_count;
+    __u64 bwd_byte_count;
+    __u64 syn_flags;
+    __u64 ack_flags;
+    // ... add fields for RST, PSH, URG, and IAT accumulators
+};
+
+// Map 1: Track statistics per Source IP
+struct {
+    __uint(type, BPF_MAP_TYPE_LRU_HASH);
+    __uint(max_entries, 65536);
+    __type(key, __u32); // Source IP
+    __type(value, struct flow_stats);
+} flow_map SEC(".maps");
+
+// Map 2: The Blacklist populated by the Go Controller
+struct {
+    __uint(type, BPF_MAP_TYPE_HASH);
+    __uint(max_entries, 10000);
+    __type(key, __u32); // Source IP
+    __type(value, __u8); // Boolean drop flag
+} drop_map SEC(".maps");</code></pre>
+<h3>2.2 The XDP Packet Logic</h3>
+<p>Next, write the main XDP hook that processes every incoming packet.</p>
+<pre><code>SEC("xdp")
+int ddos_early_warning(struct xdp_md *ctx) {
+    void *data_end = (void *)(long)ctx-&gt;data_end;
+    void *data = (void *)(long)ctx-&gt;data;
+
+    // 1. Parse Ethernet &amp; IP
+    struct ethhdr *eth = data;
+    if (data + sizeof(*eth) &gt; data_end) return XDP_PASS;
+    if (eth-&gt;h_proto != __constant_htons(ETH_P_IP)) return XDP_PASS;
+
+    struct iphdr *ip = data + sizeof(*eth);
+    if ((void*)(ip + 1) &gt; data_end) return XDP_PASS;
+
+    __u32 src_ip = ip-&gt;saddr;
+
+    // 2. Fast-Path Drop Check
+    __u8 *drop_flag = bpf_map_lookup_elem(&amp;drop_map, &amp;src_ip);
+    if (drop_flag &amp;&amp; *drop_flag == 1) {
+        return XDP_DROP; // Mitigation executed at line-rate!
+    }
+
+    // 3. Update Flow Statistics
+    struct flow_stats *stats = bpf_map_lookup_elem(&amp;flow_map, &amp;src_ip);
+    if (stats) {
+        __u64 now = bpf_ktime_get_ns();
+        stats-&gt;fwd_packet_count++;
+        stats-&gt;fwd_byte_count += bpf_ntohs(ip-&gt;tot_len);
+        stats-&gt;last_seen_ns = now;
+        // ... update TCP flags if protocol == TCP
+    } else {
+        struct flow_stats new_stats = {0};
+        new_stats.first_seen_ns = bpf_ktime_get_ns();
+        new_stats.fwd_packet_count = 1;
+        new_stats.fwd_byte_count = bpf_ntohs(ip-&gt;tot_len);
+        bpf_map_update_elem(&amp;flow_map, &amp;src_ip, &amp;new_stats, BPF_ANY);
+    }
+
+    return XDP_PASS;
+}
+
+char _license[] SEC("license") = "GPL";</code></pre>
+<p><strong>To Compile:</strong> Run this command in your Linux terminal to generate the eBPF object file:</p>
+<pre><code>clang -O2 -g -target bpf -c xdp_prog.c -o xdp_prog.o</code></pre>
+<!-- STEP 3 -->
+<h2><span class="step-badge">3</span> Write the Go Controller (User Space)</h2>
+<p>The Go application acts as the brain. It reads the raw maps, calculates the rates (e.g., Packets/s), feeds the data to ONNX, and issues Drop commands.</p>
+<h3>3.1 Setup Go Project</h3>
+<p>Initialize the Go module and install dependencies (Cilium eBPF and ONNX Runtime Go bindings):</p>
+<pre><code>cd controller
+go mod init ddos-controller
+go get github.com/cilium/ebpf
+go get github.com/yalue/onnxruntime_go</code></pre>
+<h3>3.2 The Controller Logic Loop</h3>
+<p>Create <code>main.go</code>. The logic should follow this pseudocode structure:</p>
+<div class="callout success">
+<div class="callout-title">💡 Crucial Note on the ONNX Model</div>
+<p style="margin:0;">Remember that in Windows, we successfully baked the <code>log1p</code> and <code>MinMaxScaler</code> directly into the ONNX file. Therefore, Go <strong>only</strong> needs to compute the raw real-world values (like Flow Bytes/s). Do not try to log-transform or scale values in Go!</p>
+</div>
+<pre><code>package main
+
+import (
+    "fmt"
+    "time"
+    "github.com/cilium/ebpf"
+    "github.com/yalue/onnxruntime_go"
+)
+
+func main() {
+    // 1. Initialize ONNX Runtime &amp; Load Model
+    onnxruntime_go.SetSharedLibraryPath("/usr/lib/libonnxruntime.so")
+    err := onnxruntime_go.InitializeEnvironment()
+    // ... load "xgboost_final.onnx"
+
+    // 2. Load eBPF Maps compiled from xdp_prog.o
+    objs := struct {
+        FlowMap *ebpf.Map \`ebpf:"flow_map"\`
+        DropMap *ebpf.Map \`ebpf:"drop_map"\`
+    }{}
+    // ... loadObjs()
+
+    // 3. Polling Loop
+    ticker := time.NewTicker(200 * time.Millisecond)
+    for range ticker.C {
+        var ip uint32
+        var stats FlowStats
+        iterator := objs.FlowMap.Iterate()
+
+        // Iterate over all active flows
+        for iterator.Next(&amp;ip, &amp;stats) {
+            
+            // Calculate Pre-Processing Features
+            durationSec := float32(stats.LastSeenNs - stats.FirstSeenNs) / 1e9
+            if durationSec == 0 { durationSec = 0.001 } // Prevent Div by 0
+            
+            flowBytesPerSec := float32(stats.FwdByteCount) / durationSec
+            flowPktsPerSec := float32(stats.FwdPacketCount) / durationSec
+            
+            // Construct the exactly 34-feature array matching FEATURES_V3
+            features := []float32{
+                flowBytesPerSec,
+                float32(stats.FwdByteCount),
+                flowPktsPerSec,
+                // ... map all 34 features
+            }
+
+            // Run ONNX Inference
+            attackScore := runInference(features)
+
+            // Threshold Enforcement
+            if attackScore &gt; 0.5 {
+                fmt.Printf("🚨 DDoS Detected from IP %d! Score: %.2f\\n", ip, attackScore)
+                dropVal := uint8(1)
+                objs.DropMap.Update(ip, dropVal, ebpf.UpdateAny)
+            }
+        }
+    }
+}</code></pre>
+<!-- STEP 4 -->
+<h2><span class="step-badge">4</span> Integration &amp; Live Testing</h2>
+<p>Once compiled, testing validates the entire pipeline from network card to ML model.</p>
+<ol>
+<li><strong>Attach XDP:</strong> Run the Go program as root (or use <code>ip link set dev eth0 xdp obj xdp_prog.o sec xdp</code>).</li>
+<li><strong>Generate Attack Traffic:</strong> From an external machine, blast the Linux VM with a UDP or SYN flood using hping3:
+                <code>sudo hping3 --flood -S -p 80 &lt;linux_vm_ip&gt;</code>
+</li>
+<li><strong>Watch the Mitigation:</strong> Observe the Go Controller log. You should see "🚨 DDoS Detected" printed within 200 milliseconds.</li>
+<li><strong>Verify the Drop Map:</strong> Run <code>sudo bpftool map dump name drop_map</code> on Linux to confirm the attacker's IP is successfully inserted and is actively being dropped by the kernel.</li>
+</ol>
+<div class="callout info" style="margin-top: 3rem;">
+<strong>Next Action:</strong> Begin by transferring your files to your Linux VM and writing the complete <code>xdp/xdp_prog.c</code> struct mappings based on Section 2.1.
+        </div>
+</div>
+`,
+            script: ``
+        });
+        
+        sections.push({
+            id: 'section-2',
+            title: 'Structural Blueprint',
+            html: `
+<div class="container">
+<h1>Structural Blueprint</h1>
+<p>The exact data structures bridging the Kernel (C) and Userspace (Go).</p>
+<div class="struct-card">
+<h2>1. XDP eBPF Structs (C)</h2>
+<pre><code><span class="comment">// This struct must map perfectly to the Go struct. Max 512 bytes limit on stack!</span>
+<span class="keyword">struct</span> <span class="type">flow_stats</span> {
+    <span class="type">__u64</span> first_seen_ns;
+    <span class="type">__u64</span> last_seen_ns;
+    <span class="type">__u64</span> fwd_packet_count;
+    <span class="type">__u64</span> bwd_packet_count;
+    <span class="type">__u64</span> fwd_byte_count;
+    <span class="type">__u64</span> bwd_byte_count;
+    <span class="type">__u64</span> sum_iat_ns;
+    
+    <span class="comment">// TCP Flags</span>
+    <span class="type">__u64</span> syn_flag_count;
+    <span class="type">__u64</span> ack_flag_count;
+    <span class="type">__u64</span> rst_flag_count;
+    <span class="type">__u64</span> psh_flag_count;
+    <span class="type">__u64</span> urg_flag_count;
+};
+
+<span class="comment">// BPF Maps</span>
+<span class="keyword">struct</span> {
+    __uint(type, BPF_MAP_TYPE_LRU_HASH);
+    __uint(max_entries, 65536);
+    __type(key, <span class="type">__u32</span>); <span class="comment">// Source IP (IPv4)</span>
+    __type(value, <span class="keyword">struct</span> <span class="type">flow_stats</span>);
+} flow_map SEC(".maps");</code></pre>
+</div>
+<div class="struct-card">
+<h2>2. Go Struct Alignment</h2>
+<pre><code><span class="comment">// Must match C struct alignment exactly (8-byte boundaries)</span>
+<span class="keyword">type</span> <span class="type">FlowStats</span> <span class="keyword">struct</span> {
+    FirstSeenNs    <span class="type">uint64</span>
+    LastSeenNs     <span class="type">uint64</span>
+    FwdPacketCount <span class="type">uint64</span>
+    BwdPacketCount <span class="type">uint64</span>
+    FwdByteCount   <span class="type">uint64</span>
+    BwdByteCount   <span class="type">uint64</span>
+    SumIatNs       <span class="type">uint64</span>
+    SynFlagCount   <span class="type">uint64</span>
+    AckFlagCount   <span class="type">uint64</span>
+    RstFlagCount   <span class="type">uint64</span>
+    PshFlagCount   <span class="type">uint64</span>
+    UrgFlagCount   <span class="type">uint64</span>
+}</code></pre>
+</div>
+<div class="struct-card">
+<h2>3. Feature Assembly Logic (Go)</h2>
+<pre><code><span class="comment">// Convert raw counters to FEATURES_V3 Float32 Array</span>
+durationSec := <span class="type">float32</span>(stats.LastSeenNs - stats.FirstSeenNs) / <span class="type">1e9</span>
+<span class="keyword">if</span> durationSec == <span class="type">0</span> { durationSec = <span class="type">0.001</span> }
+
+features := []<span class="type">float32</span>{
+    <span class="type">float32</span>(stats.FwdByteCount + stats.BwdByteCount) / durationSec, <span class="comment">// Flow Bytes/s</span>
+    <span class="type">float32</span>(stats.FwdByteCount),                                    <span class="comment">// Total Length of Fwd Packets</span>
+    <span class="type">float32</span>(stats.FwdPacketCount + stats.BwdPacketCount) / durationSec, <span class="comment">// Flow Packets/s</span>
+    <span class="type">float32</span>(stats.SumIatNs) / <span class="type">float32</span>(stats.FwdPacketCount) / <span class="type">1e3</span>,      <span class="comment">// Flow IAT Mean (micros)</span>
+    <span class="comment">// ... mapped to all 34 features</span>
+}</code></pre>
+</div>
+</div>
+`,
+            script: ``
+        });
+        
+        sections.push({
+            id: 'section-3',
+            title: 'Technical Notes',
+            html: `
+<h1>Technical Notes &amp; Decisions</h1>
+<div class="note">
+<h2>1. Why BPF_MAP_TYPE_LRU_HASH?</h2>
+<p><strong>Concept:</strong> LRU (Least Recently Used) Hash Maps automatically evict the oldest entries when the map reaches its capacity limit.</p>
+<p><strong>Decision:</strong> DDoS attacks involve massive IP spoofing (millions of fake IPs). A standard Hash map would fill up instantly and drop new flows, bypassing the detector. An LRU map naturally purges stale IPs to track the active flood.</p>
+</div>
+<div class="note">
+<h2>2. Why No Floating Point in eBPF?</h2>
+<p><strong>Concept:</strong> The eBPF kernel verifier forbids floating point operations for safety and performance reasons. It only understands integers.</p>
+<p><strong>Decision:</strong> We track total nanoseconds, total bytes, and packet counts as <code>uint64</code> in the Kernel. The Go Controller, running in userspace, converts these into floats and calculates rate-per-second to feed the Machine Learning model.</p>
+</div>
+<div class="note">
+<h2>3. Why embedded log1p in ONNX?</h2>
+<p><strong>Concept:</strong> ML Models are sensitive to feature scales. If the data is skewed, tree structures behave poorly.</p>
+<p><strong>Decision:</strong> By utilizing <code>FunctionTransformer</code> during Phase 2 ONNX Export, the logarithmic transformation is natively handled by the C++ ONNX Runtime. The Go code is kept purely for networking logistics, drastically reducing bugs.</p>
+</div>
+<div class="note">
+<h2>4. The Endianness Trap</h2>
+<p><strong>Concept:</strong> Network bytes arrive in Big-Endian, but most modern CPUs (x86, ARM) are Little-Endian.</p>
+<p><strong>Decision:</strong> When reading packet lengths in eBPF, you MUST use <code>bpf_ntohs(ip-&gt;tot_len)</code> (Network-To-Host-Short) before adding it to your byte counters. Otherwise, 100 bytes will be interpreted as 25600 bytes, corrupting ML inference.</p>
+</div>
+`,
+            script: ``
+        });
+        
+        sections.push({
+            id: 'section-4',
+            title: 'Command Cheatsheet',
+            html: `
+<h1>XDP/Go CLI Cheatsheet</h1>
+<h3>Clang Compilation</h3>
+<pre><code><span class="comment"># Compile XDP C code to eBPF object</span>
+clang -O2 -g -target bpf -c xdp_prog.c -o xdp_prog.o</code></pre>
+<h3>XDP Interface Management</h3>
+<pre><code><span class="comment"># Attach XDP program to network interface (e.g., eth0)</span>
+sudo ip link set dev eth0 xdp obj xdp_prog.o sec xdp
+
+<span class="comment"># Remove XDP program from interface</span>
+sudo ip link set dev eth0 xdp off
+
+<span class="comment"># View active XDP attachments</span>
+ip link show dev eth0</code></pre>
+<h3>eBPF Map Inspection (bpftool)</h3>
+<pre><code><span class="comment"># List all loaded maps</span>
+sudo bpftool map show
+
+<span class="comment"># Dump contents of a map (replace ID with map ID)</span>
+sudo bpftool map dump id 123
+
+<span class="comment"># Clear all entries from map (requires bpfcc-tools mapping)</span>
+sudo bpftool map delete id 123 key 0 0 0 0</code></pre>
+<h3>Traffic Generation (Attacker VM)</h3>
+<pre><code><span class="comment"># Generate SYN Flood with spoofed IPs at max speed</span>
+sudo hping3 -S --flood --rand-source -p 80 &lt;victim_ip&gt;
+
+<span class="comment"># Generate UDP Flood</span>
+sudo hping3 --udp --flood --rand-source -p 53 &lt;victim_ip&gt;
+
+<span class="comment"># Replay PCAP file (for exact scenario testing)</span>
+sudo tcpreplay -i eth0 test_attack.pcap</code></pre>
+<h3>Go Modules</h3>
+<pre><code><span class="comment"># Download required libraries</span>
+go get github.com/cilium/ebpf
+go get github.com/yalue/onnxruntime_go
+go mod tidy</code></pre>
+`,
+            script: ``
+        });
+        
+        sections.push({
+            id: 'section-5',
+            title: 'Execution Checklist',
+            html: `
+<div class="container">
+<h1>Phase 3 Checklist</h1>
+<div class="progress-bar"><div class="progress-fill" id="prog"></div></div>
+<div id="checklist"></div>
+</div>
+
+`,
+            script: `
+        (function() {
+            const tasks = [
+                { group: "1. Linux Environment", items: ["Install Clang, LLVM, and libbpf-dev", "Install Golang", "Transfer xgboost_final.onnx to Linux"] },
+                { group: "2. XDP Development (C)", items: ["Write struct flow_stats", "Define BPF_MAP_TYPE_LRU_HASH for flows", "Define BPF_MAP_TYPE_HASH for blacklist", "Parse Ethernet & IPv4 Headers", "Parse TCP/UDP Headers & Flags", "Implement Drop Logic (XDP_DROP)"] },
+                { group: "3. Controller Setup (Go)", items: ["go get github.com/cilium/ebpf", "go get github.com/yalue/onnxruntime_go", "Load compiled XDP object file in Go", "Attach XDP to network interface"] },
+                { group: "4. Inference Loop (Go)", items: ["Iterate through BPF Flow Map every 200ms", "Compute 34 FEATURES_V3 (Rates/Sec, Means)", "Pass Float32 Array to ONNX Runtime", "Update BPF Drop Map if Score > 0.5"] },
+                { group: "5. Validation (MVP-2)", items: ["Run hping3 SYN flood", "Verify Go controller logs ALERT", "Verify XDP drops packets via bpftool"] }
+            ];
+
+            const saved = JSON.parse(localStorage.getItem('p3-check') || '{}');
+            const chkContainer = document.getElementById('checklist');
+            if (!chkContainer) return;
+            
+            chkContainer.innerHTML = ''; // Prevent duplication
+
+            function updateProg() {
+                const boxes = document.querySelectorAll('#checklist input[type="checkbox"]');
+                const checked = document.querySelectorAll('#checklist input[type="checkbox"]:checked');
+                const prog = document.getElementById('prog');
+                if (prog && boxes.length > 0) {
+                    prog.style.width = \`\${(checked.length / boxes.length) * 100}%\`;
+                }
+            }
+
+            tasks.forEach((g, gIdx) => {
+                const div = document.createElement('div');
+                div.className = 'task-group';
+                div.innerHTML = \`<h2>\${g.group}</h2>\`;
+                g.items.forEach((item, iIdx) => {
+                    const id = \`t-\${gIdx}-\${iIdx}\`;
+                    const tDiv = document.createElement('div');
+                    tDiv.className = 'task';
+                    const isChecked = saved[id] ? 'checked' : '';
+                    const isDone = saved[id] ? 'done' : '';
+                    tDiv.innerHTML = \`<input type="checkbox" id="\${id}" \${isChecked}><label for="\${id}" class="\${isDone}">\${item}</label>\`;
+                    div.appendChild(tDiv);
+                });
+                chkContainer.appendChild(div);
+            });
+
+            if (!window.checklistBound) {
+                window.checklistBound = true;
+                document.addEventListener('change', (e) => {
+                    if(e.target.tagName === 'INPUT' && e.target.id.startsWith('t-')) {
+                        const s = JSON.parse(localStorage.getItem('p3-check') || '{}');
+                        s[e.target.id] = e.target.checked;
+                        localStorage.setItem('p3-check', JSON.stringify(s));
+                        e.target.nextElementSibling.classList.toggle('done', e.target.checked);
+                        updateProg();
+                    }
+                });
+            }
+            updateProg();
+        })();
+    \\n`
+        });
+        
+        const navbar = document.getElementById('navbar');
+        const container = document.getElementById('content-container');
+
+        function loadSection(index) {
+            // Update buttons
+            document.querySelectorAll('.nav-btn').forEach((btn, i) => {
+                btn.className = i === index ? 'nav-btn active' : 'nav-btn';
+            });
+
+            // Update content
+            container.innerHTML = `<div class="section-content active">${sections[index].html}</div>`;
+            
+            // Execute associated scripts safely
+            if(sections[index].script) {
+                try {
+                    eval(sections[index].script);
+                } catch(e) { console.error('Script execution error:', e); }
+            }
+            
+            // Re-render Mermaid if present
+            if(sections[index].html.includes('mermaid')) {
+                mermaid.init(undefined, document.querySelectorAll('.mermaid'));
+            }
+        }
+
+        // Initialize UI
+        sections.forEach((sec, i) => {
+            const btn = document.createElement('button');
+            btn.className = 'nav-btn';
+            btn.textContent = sec.title;
+            btn.onclick = () => loadSection(i);
+            navbar.appendChild(btn);
+        });
+
+        // Load first section
+        if(sections.length > 0) loadSection(0);
+    </script>
+</body>
+</html>
